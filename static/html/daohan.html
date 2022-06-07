@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航栏动画</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --bg-color: #eaecf0;
+            --main-color: #5080ef;
+            --nav-item-width: 100px;
+            --nav-item-height: 32px;
+            --nav-item-border-width: 4px;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-color);
+        }
+
+        .nav {
+            position: relative;
+            background: white;
+            border-radius: 24px;
+            font-size: 0;
+            padding: var(--nav-item-border-width);
+            z-index: 1;
+        }
+
+        .nav-item {
+            width: var(--nav-item-width);
+            height: var(--nav-item-height);
+            font-size: 14px;
+            color: var(--main-color);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: color .3s ease-in-out;
+        }
+
+        .nav>input[type="radio"] {
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .nav>input[type="radio"]:checked+label {
+            color: white;
+        }
+
+        .tracker {
+            width: var(--nav-item-width);
+            height: var(--nav-item-height);
+            background: var(--main-color);
+            z-index: -1;
+            position: absolute;
+            left: var(--nav-item-border-width);
+            top: var(--nav-item-border-width);
+            border-radius: 24px;
+            transition: transform .3s ease-in-out;
+        }
+
+        #nav-item-opt-2:checked~.tracker {
+            transform: translateX(calc(var(--nav-item-width)));
+        }
+
+        #nav-item-opt-3:checked~.tracker {
+            transform: translateX(calc(var(--nav-item-width)*2));
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="nav">
+        <input type="radio" name="nav-item-opt" id="nav-item-opt-1" checked>
+        <label class="nav-item" for="nav-item-opt-1">HTML</label>
+
+        <input type="radio" name="nav-item-opt" id="nav-item-opt-2">
+        <label class="nav-item" for="nav-item-opt-2">CSS</label>
+
+        <input type="radio" name="nav-item-opt" id="nav-item-opt-3">
+        <label class="nav-item" for="nav-item-opt-3">JavaScript</label>
+
+        <div class="tracker"></div>
+    </nav>
+
+</body>
+
+</html>

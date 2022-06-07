@@ -1,0 +1,47 @@
+.but-item {
+    background-color: rgba(245, 245, 245, 0.5);
+    border: 1px solid #cccc;
+    border-radius: 5px;
+}
+.but-item:hover {
+    background-color: rgba(245, 245, 245, 0.9);
+}
+
+.but-item-warning {
+    background-color: rgba(230, 162, 60, 0.8);
+    color: white;
+    height: 40px;
+    min-width: 80px;
+    border: 1px solid #cccc;
+    border-radius: 5px;
+}
+
+.but-item-warning:hover {
+    background-color: rgba(230, 162, 60, 0.9);
+}
+
+.but-item-error {
+    background-color: rgba(245, 108, 108,0.9);
+    color: white;
+    height: 40px;
+    min-width: 80px;
+    border: 1px solid #cccc;
+    border-radius: 5px;
+}
+
+.but-item-error:hover {
+    background-color: rgba(245, 108, 108, 1);
+}
+
+.but-item-blue {
+    background-color: rgba(64, 158, 255,0.9);
+    color: white;
+    height: 40px;
+    min-width: 80px;
+    border: 1px solid #cccc;
+    border-radius: 5px;
+}
+
+.but-item-blue:hover {
+    background-color: rgba(64, 158, 255, 1);
+}

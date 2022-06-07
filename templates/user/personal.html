@@ -1,0 +1,112 @@
+{{define "user/personal.html"}}
+<head>
+  <meta charset="UTF-8">
+  <title>个人页面</title>
+  <link rel="icon" href="/static/img/favicon.ico">
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+  <!-- 引入组件库 -->
+  <script src="/static/js/vue.js"></script>
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <div id="userapp">
+    <!-- 页头 -->
+    <el-page-header @back="goBack" content="{{.title}}"></el-page-header>
+
+    <el-row class="tac">
+      <el-col :span="4">
+
+        <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"  @select="handleSelect">
+
+          <el-menu-item index="1">
+            <i class="el-icon-user"></i>
+            <span slot="title">用户信息</span>
+          </el-menu-item>
+
+          <el-menu-item index="2">
+            <i class="el-icon-headset"></i>
+            <span slot="title">动态</span>
+          </el-menu-item>
+
+          <el-menu-item index="3">
+            <i class="el-icon-s-finance"></i>
+            <span slot="title">账户</span>
+          </el-menu-item>
+
+          <el-menu-item index="4">
+            <i class="el-icon-setting"></i>
+            <span slot="title">好友</span>
+          </el-menu-item>
+
+          <el-menu-item index="5">
+            <i class="el-icon-edit-outline"></i>
+            <span slot="title">我的作品</span>
+          </el-menu-item>
+
+          <el-menu-item index="6">
+            <i class="el-icon-star-off"></i>
+            <span slot="title">我的收藏</span>
+          </el-menu-item>
+
+          <el-menu-item index="7">
+            <i class="el-icon-setting"></i>
+            <span slot="title">设置</span>
+          </el-menu-item>
+
+        </el-menu>
+
+      </el-col>
+
+      <!-- 这个是主要内容放置的地方 -->
+      <el-col :span="20">
+        <iframe class="main" :src="src" frameborder="0" scrolling="no"></iframe>
+      </el-col>
+
+    </el-row>
+  </div>
+</body>
+
+<script>
+  let vue = new Vue({
+    el:'#userapp',
+    data() {
+      return {
+        visible: false,
+        text: "变身奥特曼",
+        src:'/user/setting'
+      }
+    },
+    methods: {
+      goBack() {
+        window.history.back();
+      },
+      handleOpen(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleClose(key, keyPath) {
+        console.log(key, keyPath);
+      },
+      handleSelect(key, keyPath){
+        if(key == 1){
+          this.src = "/user/setting"
+        }
+      }
+    },
+  })
+</script>
+
+<style>
+  .tac{
+    margin-top: 40px;
+  }
+  .main{
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+</html>
+{{end}}

@@ -1,0 +1,387 @@
+{{define "user/login.html"}}
+<style>
+    body {
+        background: linear-gradient(135deg, #65799b, #5e2563);
+    }
+
+    .user_login * {
+        padding: 0;
+        margin: 0;
+    }
+
+    .user_login {
+
+        height: 1000px;
+    }
+
+    .user_login .user_login {
+        font-family: 'Ubuntu', sans-serif;
+        background: url("https://lh3.googleusercontent.com/ohXfK_gejGdGoxN7Vzf2hE9EWsvXhR9AnPlRqylsbhSFn1hU2pDZ4dkG8Q8Wj8cd4g9hVGShd2X7qBSTkbWiX-2UmhH44u_-M4xpO2nMBYsi0ymKeMpfZFOMWXtTJW28YdTjVquwquv9pTTCBFpTnG_C8euEUgO08mXO63oDcqIN9bmSvh5B8MUDw2MJ_oYAMJoCi8UeI9nvfs7z3UbcQQPNYHyXgi0wKW9aMmz8ogaRUPHf5Z7tKv9Am8my9XsleXNzeZjlTY7qobFffw5xwpNBUGNYdPWfkF-XWQyhrcJsESwGFHUlFDtVvU_V6IOgHA-jZmnmu8e3_wBA50VTO713U-DoDMjhZliK1qSUoR9FBxcPE7Z_O3kVk9v5qFUgwO2wmybVKDmH9gn55vDnBEiHCr-0cfKJgJHYlgIFm3fwguGYtIEpYK5ucGAxjz_NPcM5fw9BNQ-M67dyM5eY9Tdav198oMNTAJLKGmdaEG4v8UqRsxk5hyFhOWeufn6vuaG2TrxB9_kDR5gaYroneuDaYB9CySvKyXo_AmqA3po7mGl8W0HBphFHzOPkfFqyGdpTfeJNurtKuuV99cb57kHxwieMwWCPwUNRFzZwOByzNyfcPkeVMgy8z7tpYj6Eb9SUpt8Y-6j9-Qj9lfxnHJNTZ0CTzxvJ-N_Mwya-YA=w1135-h638-no") no-repeat;
+        background-size: cover;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .user_login .main-container {
+        width: 500px;
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .user_login .pokemon-top-part {
+        width: 200px;
+        height: 100px;
+        background: #F22613;
+        margin: 0 auto;
+        border-radius: 200px 200px 0 0;
+        border: 5px solid #333;
+    }
+
+    .user_login .pokemon-bottom-part {
+        position: relative;
+    }
+
+    .user_login .white-part {
+        width: 200px;
+        height: 100px;
+        background: #ffffff;
+        margin: 0 auto;
+        border-radius: 0 0 200px 200px;
+        border: 5px solid #333;
+    }
+
+    .user_login .black-line {
+        width: 210px;
+        height: 25px;
+        background: #333;
+        margin: 0 auto;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .user_login .black-line::after {
+        content: '';
+        width: 50px;
+        height: 50px;
+        background: #333;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -25%);
+    }
+
+    .user_login .black-line::before {
+        content: '';
+        width: 30px;
+        height: 30px;
+        background: #fff;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -2px);
+        z-index: 999;
+    }
+
+    .user_login .signup-form {
+        background: url("https://lh3.googleusercontent.com/6ObGgH3qiiOYrkZyd2dsxvvaulkjw2h-RF-I9764grYVGxz6dM_SYOW7EfUkvTIgUxtKOmpnYBrH0tDkJvsoYGLPYtAfgs_hM06Oyxo2QyiB19nNAOA0lqgQAX5Pf1i7qjCCN54cJnGW3jsmA2YbhHaL3cMSdKY8hzOk7QGXxyAALPANU-aQs88FlS9RT8uaL59K4yhFFHBhZzTZ9aj3dWxgrT0FRJy5fQJjM6qEZTnsrAc9cstFsyyYX7tHSQasMc9ER7ypAQjPHqj9gxEjLz4DDPFgY4vBx_3XgQ-fD5QdxCR3N5XuxFfovbeKwI2sPCfr4uP2IhNW684qPHD2uH1GCE1FQ8JZt8IXpsNevzVE0yNOmFGcHa064wGkTPCtjTQcZ0Y6KOnqBUDfKWqt5UkkKGz_C5QM3sDuMUHa6cNmwejLkF-RDrWNnPr_-6MYIziztw7ExYZYJ71HWEyPNRqREeSO6wgw2O38OyzTwE_eJ4K0KOYyqVGL8Jw9tn6bKpLJsoVtQ17rXg0N57uG41Jqa-P5q8AltDWmsePSzBstx5pAFbcrRkizwESHAlV_JnsYcNeIFUZTOSKDxZuvlafr9PVK3dbIdEp1EHz6QnM_6MCXRSaaP3Nu9FocxRd_nlOGDG1X-_sBpXLsmooM7bGmopx1HzUux9ROKzPyJg=w1135-h638-no") no-repeat;
+        background-size: cover;
+        border-radius: 21px;
+    }
+
+    .user_login .sign-back {
+        background: linear-gradient(135deg, #000c40, #607d8b);
+        border-radius: 10px;
+        padding: 65px 0;
+        border-radius: 21px;
+        box-shadow: 13px 13px 26px #cacaca,
+            -13px -13px 26px #f6f6f6;
+    }
+
+    .user_login .sign-back h1 {
+        text-transform: uppercase;
+        text-align: center;
+        color: #fff;
+        margin-top: 0;
+        letter-spacing: 5px;
+        text-shadow: 1px 1px 1px #333
+    }
+
+    .user_login .signup-row {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    .user_login .signup-row input {
+        padding: 5px 0;
+        border: 0;
+        border-bottom: 1px solid #fff;
+        background: transparent;
+        width: 50%;
+        text-align: center;
+        outline: none;
+        color: #fff;
+        font-family: 'Ubuntu', sans-serif;
+    }
+
+    .user_login .signup-row input::-webkit-input-placeholder {
+        color: #fff;
+        text-shadow: 1px 1px 1px rgba(51, 51, 51, 0.6)
+    }
+
+    .user_login .signup-row i {
+        color: #fff;
+        position: relative;
+        left: 20px;
+        text-shadow: 1px 1px 1px rgba(51, 51, 51, 0.6)
+    }
+
+    .user_login .signup-row a {
+        font-size: 40px;
+        text-decoration: none;
+    }
+
+    .user_login .signup-row a i {
+        left: 0;
+    }
+
+    .user_login .form-bottom {
+        display: flex;
+        justify-content: center;
+    }
+
+    .user_login .remember:not(:last-child) {
+        margin-right: 30px;
+        color: #ffff;
+    }
+
+    .user_login .remember:not(:last-child):hover {
+        margin-right: 30px;
+        color: #fff;
+        transition: all 200ms;
+
+    }
+
+    .user_login .remember a {
+        text-decoration: none;
+        color: #ffff;
+        transition: all 200ms;
+    }
+
+    .user_login .remember a:hover {
+        text-decoration: none;
+        color: #fff;
+    }
+
+    .user_login input[type="checkbox"] {
+        position: relative;
+        top: 1px;
+        transition: all 200ms;
+
+    }
+
+    .user_login .main-forms {
+        overflow: hidden;
+        display: none;
+        position: relative;
+        border-radius: 21px;
+    }
+
+    .user_login .red-circle::before {
+        background: #F22613;
+    }
+</style>
+
+<body>
+    <div class="user_login" id="user_login">
+        <!-- <audio autoplay>
+        </audio> -->
+        <!-- Start Main Container -->
+        <div class="main-container">
+            <!-- Start Pokemon Ball Top Part -->
+            <div class="pokemon-top-part"></div>
+            <!-- End Pokemon Ball Top Part -->
+            <!-- Start Main Forms -->
+            <div class="main-forms">
+                <div class="signup-form">
+                    <form id="from" class="sign-back" action="/user/login" method="post">
+                        <h1>用户登陆</h1>
+                        <div class="signup-row">
+                            <i class="fa fa-phone"></i>
+                            <input type="text" name="phone" value="" placeholder="电话号码">
+                        </div>
+                        <div style="color: red;text-align: center;font-size: small;" v-text="phone_error"></div>
+                        <div class="signup-row">
+                            <i class="fa fa-key"></i>
+                            <input type="password" name="password" value="" placeholder="密码">
+                        </div>
+                        <div style="color: red;text-align: center;font-size: small;" v-text="password_error"></div>
+                        <div class="signup-row">
+                            <a @click="sub">
+                                <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        <div class="form-bottom">
+                            <div class="remember">
+                                <input type="checkbox" name="" value="">
+                                <span>同意协议</span>
+                            </div>
+                            <div class="remember">
+                                <a href="#">亲你有什么需要帮助的吗？</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- End Main Forms -->
+            <!-- Start Pokemon Ball Bottom Part -->
+            <div class="pokemon-bottom-part">
+                <div class="white-part"></div>
+                <div class="black-line"></div>
+            </div>
+            <!-- End Pokemon Ball Bottom Part -->
+        </div>
+    </div>
+</body>
+
+<script src="https://use.fontawesome.com/7dddae9ad9.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
+<script src="/static/js/jquery-3.6.js"></script>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/jquery.cookie.js"></script>
+<script>
+    console.log($.cookie('token2'));
+    new Vue({
+        el:'#user_login',
+        data(){
+            return{
+                hello:'欢迎登陆',
+                phone_error:'',
+                password_error:'',
+            }
+        },
+        methods:{
+            sub(){
+                // 验证表单是否用户名密码为空
+                var phone = $('input[name="phone"]').val();
+                var password = $('input[name="password"]').val();
+                if(phone == ''){
+                    this.phone_error = '电话号码不能为空';
+                    return false;
+                }
+                if(password == ''){
+                    this.password_error = '密码不能为空';
+                    return false;
+                }
+                // 提交表单
+                $('#from').submit();
+            }
+        }
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        var blackLine = $(".black-line"),
+            ball = $(".main-container"),
+            mainForm = $(".main-forms"),
+            top = $(".pokemon-top-part"),
+            bottom = $(".pokemon-bottom-part"),
+            h = $(".sign-back h1"),
+            row = $(".signup-row"),
+            arrow = $(".signup-row a"),
+            rem = $(".remember"),
+            tl = new TimelineMax();
+
+        // Start
+        tl
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(ball, 0, {
+                y: "-70%",
+                ease: Power4.easeOut
+            })
+            .to(ball, 0, {
+                y: "-50%",
+                ease: Bounce.easeOut
+            })
+            .to(ball, 0, {
+                y: "-85%",
+                ease: Power4.easeOut
+            }, "+=0.5")
+            .to(ball, 0, {
+                y: "-50%",
+                ease: Bounce.easeOut
+            })
+            .to(ball, 0, {
+                y: "-100%",
+                ease: Power4.easeOut
+            }, "+=0.5")
+            .to(ball, 0.5, {
+                y: "-50%",
+                ease: Bounce.easeOut,
+                onComplete: toggle
+            });
+
+        function toggle(o) {
+            $(".main-forms").slideDown(1500);
+            tl
+                .to(top, 1, {
+                    autoAlpha: 0
+                })
+                .to(bottom, 1, {
+                    autoAlpha: 0
+                }, "-=1")
+                .fromTo(h, 1, {
+                    autoAlpha: 0,
+                    y: -20
+                }, {
+                    autoAlpha: 1,
+                    y: 0
+                }, "+=0.5")
+                .staggerFrom(row, 1, {
+                    left: "-100%",
+                    autoAlpha: 0
+                }, 0.2)
+                .staggerFrom(rem, 1, {
+                    cycle: {
+                        y: [20, -20]
+                    },
+                    autoAlpha: 0
+                }, 0.2)
+
+        }
+
+    })
+</script>
+
+{{end}}

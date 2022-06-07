@@ -1,0 +1,237 @@
+{{define "head"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .head ul li {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        .head a {
+            text-decoration: none;
+            color: #222222;
+        }
+
+        .head a:hover {
+            text-decoration: underline;
+            color: #69c0ff;
+        }
+
+        .head {
+            position: fixed;
+            top: 0;
+            padding: 10px 20px 10px 0px;
+            border-bottom: 10px solid #222222;
+            border-top: 10px solid #222222;
+            display: flex;
+            width: 100%;
+            height: 40px;
+            z-index: 1;
+            background-color: #fafafa;
+        }
+
+        .head-real {
+            width: 100%;
+            height: 70px;
+        }
+
+        .logo-head {
+            flex: 0.2;
+            display: flex;
+        }
+
+        .left-head {
+            flex: 0.4;
+        }
+
+        .right-head {
+            flex: 0.4;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+
+        .right-head div {
+            flex: 0.2;
+        }
+
+        .right-head div:hover {
+            color: #69c0ff;
+        }
+
+        .left-head ul {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: flex-end;
+            line-height: 10px;
+        }
+
+        .left-head ul li {
+            flex: 0.2;
+            justify-content: center;
+        }
+
+        .left-head ul li:hover {
+            color: #69c0ff;
+        }
+
+        .right-head .search {
+            flex: 0.6;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .binyin-search {
+            padding: 0px 10px 0px 30px;
+            height: 50px;
+            border: 1px solid #69c0ff;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .search-hert:focus {
+            outline: none;
+        }
+
+        .search-hert {
+            display: block;
+            height: 40px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 13px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <div class="head-real"></div>
+    <div class="head" id="head">
+        <!-- 这个是logo -->
+        <div class="logo-head">
+            <a href="/" style="flex: 0.3;">
+                <img src="/static/img/favicon.ico" style="display: block;border-radius: 30px;" alt="logo" width="48px"
+                    height="48px">
+            </a>
+            <p>
+                <a href="/"
+                    style="flex: 0.1;text-align: center;line-height: 10px;font-weight:800;font-style: italic;font-size:large;">Pokemon
+                    WiKi</a>
+            </p>
+        </div>
+        <!-- 这个是需要展示的导航栏 -->
+        <div class="left-head">
+            <ul>
+                <li>
+                    <a>最近资讯</a><i class="bi bi-caret-down-fill"></i>
+                </li>
+                <li>
+                    <a>部落</a><i class="bi bi-caret-down-fill"></i>
+                </li>
+                <li>
+                    <a>对战室</a><i class="bi bi-caret-down-fill"></i>
+                </li>
+                <li>
+                    <a>商城</a><i class="bi bi-caret-down-fill"></i>
+                </li>
+                <li>
+                    <a>在线玩</a><i class="bi bi-caret-down-fill"></i>
+                </li>
+            </ul>
+        </div>
+        <div class="right-head">
+            <div class="search">
+                <div class="binyin-search">
+                    <i class="bi bi-search search-icon"></i><input class="search-hert"
+                        style="border: 0px;width: 200px;font-weight:800;" type="text" placeholder="Search">
+                </div>
+            </div>
+            <div>
+                <a href="#">导航六</a><i class="bi bi-caret-down-fill"></i>
+            </div>
+            <div style="display: flex;">
+                <img @click="jump_login" :src="user.head_portrait===''?'http://localhost:4001/static/img/favicon.ico':user.head_portrait"
+                    style="display: block;border-radius: 24px;flex: 0.2;cursor: pointer;" alt="logo" width="48px"
+                    height="48px">
+                <a style="display: block;flex: 0.2;line-height: 50px;padding-left: 10px;" href="#" v-text="user.name===''?'未登入':user.name"></a>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/jquery-3.6.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script>
+        let token = localStorage.getItem("token")
+        if (token === '' || token === null || token === undefined) {
+            localStorage.setItem('token', '{{.token}}')
+        }
+
+        function ax(option) {
+            return $.ajax({
+                url: option.url,
+                method: option.method || "post",
+                data: option.data || {},
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token"),
+                }
+            })
+        }
+
+        let vue = new Vue({
+            el: '#head',
+            data() {
+                return {
+                    user: {
+                        head_portrait:'',
+                        name:''
+                    },
+                    user_text: "Ni hao shi jie"
+                }
+            },
+            methods: {
+                jump_login() {
+                    let token = localStorage.getItem("token")
+                    
+                    if(token !== ''&&token!== null&&token !== undefined){
+                        window.location.href = '/user/personal';
+                    }else{
+                        window.location.href = '/user/login';
+                    }
+                }
+            },
+            watch: {
+
+            },
+            created() {
+                console.log("来到了这里过");
+                ax({
+                    url: "/user/",
+                    method: "get",
+                }).then(res => {
+                    console.log(res);
+                    if (res.code === 200) {
+                        this.user = res.data
+                        console.log(user);
+                    } else {
+                        localStorage.setItem('token', '')
+                    }
+                })
+            },
+        })
+    </script>
+</body>
+
+</html>
+{{end}}

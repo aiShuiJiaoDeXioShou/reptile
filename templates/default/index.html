@@ -1,0 +1,25 @@
+{{define "default/index.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/static/img/favicon.ico">
+    <title>传说之下</title>
+    <style>
+        .def-body .win{
+            min-width: 100%;
+            max-height: 100%;
+            min-height: 800px;
+        }
+    </style>
+</head>
+<body>
+    {{template "head" .}}
+    <!-- {{template "record/add" .}} -->
+    <div class="def-body">
+        <iframe class="win" src="/body/index" frameborder="0" name="win-root"></iframe>
+    </div>
+    {{template "end" .}}
+</body>
+</html>
+{{end}}

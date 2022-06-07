@@ -1,0 +1,21 @@
+{{define "body/index.html"}}
+<style>
+    .win-body {
+        display: flex;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .win-body .win {
+        margin: 0 auto;
+        flex: 0.8;
+        min-width: 85%;
+        max-width: 120%;
+        height: 800px;
+    }
+</style>
+<div class="win-body">
+    {{template "body/left" .}}
+    <iframe class="win" src="https://wiki.52poke.com/wiki/%E4%B8%BB%E9%A1%B5" frameborder="0" name="windows"></iframe>
+</div>
+
+{{end}}

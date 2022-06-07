@@ -1,0 +1,56 @@
+{{define "record/add"}}
+{{template "base" .}}
+<style>
+    #form-add {
+        margin: 200px auto;
+        text-align: center;
+        border: 1px solid #cccc;
+        /* 显示阴影 */
+        box-shadow:10px 10px 5px #888888;
+        width: 400px;
+        border-radius: 5px;
+        z-index: 1;
+    }
+    .bg-blur:after{
+        filter: blur(2px);
+        z-index: -1;
+        background: inherit;
+        width:100%;
+        height:100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    #form-add input{
+        width: 200px;
+        height: 30px;
+        margin: 10px;
+    }
+</style>
+<div class="bg-blur">
+    <form id="form-add" class="form" action="/add/note" method="post">
+         <div class="field">
+             <label class="label">Title:</label>
+             <div class="control">
+                 <input class="input" name="title" id="title" type="text" placeholder="Title input">
+             </div>
+         </div>
+         <div class="field" >
+             <label class="label">Command:</label>
+             <div class="control">
+                 <input class="input" type="text" name="command" id="command"></input>
+             </div>
+         </div>
+         <div class="field">
+             <label class="label">描述:</label>
+             <div class="control">
+                 <textarea class="textarea" name="content" id="content" cols="30" rows="10"></textarea>
+             </div>
+         </div>
+         <input type="submit" value="Add">
+     </form> 
+ </div>
+<button class="but-item-warning">无聊</button>
+<button class="but-item-error">警告</button>
+<button class="but-item-blue">蓝色的按钮</button>
+{{end}}
