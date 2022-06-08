@@ -3,7 +3,6 @@ package router
 import (
 	"log"
 	"net/http"
-	"reptile/middleware/usermiddleware"
 	"reptile/dao/userdao"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,7 @@ import (
 type(
 	// 这个是项目路由的管理器，用于管理项目的路由
 	MyRouter struct{
-
+		
 	}
 )
 
@@ -27,11 +26,16 @@ func (myrouter *MyRouter)InitForHtml(router *gin.Engine) {
 	router.GET("/", myrouter.IndexRouter)
 	router.GET("/record", myrouter.RecordRouter)
 	router.GET("/body/index", myrouter.BodyRouter)
-	router.GET("/user/register", myrouter.RegisterRouter)
-	router.GET("/user/login", myrouter.LoginRouter)
-	router.GET("/user/setting", myrouter.SeetingRouter)
-	router.GET("/user/personal",usermiddleware.JurMiddleware, myrouter.PersonalRouter)
+	router.GET("/body/model", myrouter.ModelRouter)
+	myrouter.newUserRouter(router)
+	myrouter.newWikiRouter(router)
+}
 
+// 模块化的首页
+func (myrouter *MyRouter)ModelRouter(c *gin.Context) {
+	c.HTML(http.StatusOK, "body/model.html", gin.H{
+		"title": "model",
+	})
 }
 
 // 下面是处理路由的函数

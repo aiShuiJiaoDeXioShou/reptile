@@ -4,9 +4,18 @@ import (
 	"log"
 	"net/http"
 	"reptile/dao/userdao"
+	"reptile/middleware/usermiddleware"
 
 	"github.com/gin-gonic/gin"
 )
+
+func (myrouter *MyRouter)newUserRouter(router *gin.Engine) {
+	userrouter := router.Group("/user")
+	userrouter.GET("/register", myrouter.RegisterRouter)
+	userrouter.GET("/login", myrouter.LoginRouter)
+	userrouter.GET("/setting", myrouter.SeetingRouter)
+	userrouter.GET("/personal",usermiddleware.JurMiddleware, myrouter.PersonalRouter)
+}
 
 func (myrouter *MyRouter) RegisterRouter(c *gin.Context) {
 	c.HTML(http.StatusOK, "user/register.html", gin.H{
