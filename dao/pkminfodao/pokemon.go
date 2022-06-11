@@ -68,3 +68,45 @@ func NewPkmDaoManger() *PkmDaoManger {
 		db: dao.DB,
 	}
 }
+
+// 插入一个数组的数据
+func (p *PkmDaoManger) InsertPkm(pkm *[]Pokemon) {
+	for _, v := range *pkm {
+		if len(v.Name) > 0 {
+			p.db.Create(&v)
+		}
+	}
+}
+
+// 根据id删除一条数据
+func (p *PkmDaoManger) DeletePkm(id int) {
+	p.db.Where("id = ?", id).Delete(&Pokemon{})
+}
+
+// 根据name查询一条数据
+func (p *PkmDaoManger) FindPkmByName(name string) *Pokemon {
+	var pkm Pokemon
+	p.db.Where("name = ?", name).First(&pkm)
+	return &pkm
+}
+
+// 根据id查询一条数据
+func (p *PkmDaoManger) FindPkmById(id int) *Pokemon {
+	var pkm Pokemon
+	p.db.Where("id = ?", id).First(&pkm)
+	return &pkm
+}
+
+// 分页查询数据
+func (p *PkmDaoManger) FindPkmByPage(page int, limit int) *[]Pokemon {
+	var pkm []Pokemon
+	p.db.Limit(limit).Offset(page).Find(&pkm)
+	return &pkm
+}
+
+// 根据名称查询一条数据
+func (p *PkmDaoManger) FindPkmByNameLike(name string) *[]Pokemon {
+	var pkm []Pokemon
+	p.db.Where("name like ?", "%"+name+"%").Find(&pkm)
+	return &pkm
+}

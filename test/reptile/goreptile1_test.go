@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"testing"
@@ -20,12 +21,12 @@ func Test1(t *testing.T) {
 	d.Find(".eplist").Each(func(i int, s *goquery.Selection) {
 		node := s.Find("td")
 		node.Find("a").Each(func(i int, s *goquery.Selection) {
-			if s.Text() == "烈咬陆鲨" {
+			if s.Text() == "喷火龙" {
 				// 序号
 				name := s.Parent().Parent().Children().Eq(0).Text()
-				log.Print("序号:",name)
+				log.Print("序号:", name)
 				// 名称
-				log.Print("昵称:",s.Text())
+				log.Print("昵称:", s.Text())
 				if val, exists := s.Attr("href"); exists {
 					拿到指定宝可梦的详细数据(baseurl + val)
 				}
@@ -66,7 +67,7 @@ func 拿到指定宝可梦的详细数据(url string) {
 			}
 		}
 	})
-	
+
 	fater := table.Find("table.roundy.bgwhite.fulltable>tbody>tr")
 
 	// 特性
@@ -78,7 +79,7 @@ func 拿到指定宝可梦的详细数据(url string) {
 					s2 := s.Next().Next()
 					if len(s2.Text()) > 0 {
 						log.Println(str, s2.Text())
-					}else {
+					} else {
 						log.Println(str)
 					}
 				}
@@ -94,117 +95,143 @@ func 拿到指定宝可梦的详细数据(url string) {
 	// 关都地区
 	basepath := "#mw-content-text > div > table.roundy.a-r.at-c > tbody >"
 	guandu := d.Find("td.bd-关都.bw-1.roundyright").Eq(0)
-	log.Println("关都地区 ",guandu.Text())
+	log.Println("关都地区 ", guandu.Text())
 
 	// 成都地区
 	chendu := d.Find(".bd-城都.bw-1").Eq(0)
-	log.Println("成都地区 ",chendu.Text())
+	log.Println("成都地区 ", chendu.Text())
 
 	// 卡洛斯地区
 	kls := d.Find(".bd-卡洛斯.bw-1.roundyright").Eq(0)
-	log.Println("卡洛斯地区 ",kls.Text())
+	log.Println("卡洛斯地区 ", kls.Text())
 
 	// 伽勒尔地区
 	jls := d.Find("td.bd-伽勒尔.bw-1.roundyright").Eq(0)
-	log.Println("伽勒尔地区 ",jls.Text())
+	log.Println("伽勒尔地区 ", jls.Text())
 
 	// 身高
 	var height *goquery.Selection
-	height = d.Find(fmt.Sprintf("%s tr:nth-child(8) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td",basepath))
+	height = d.Find(fmt.Sprintf("%s tr:nth-child(8) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td", basepath))
 	if len(height.Text()) == 0 {
 		height = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(8) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td")
 	}
 
-	log.Println("身高 ",height.Text())
+	log.Println("身高 ", height.Text())
 
 	// 体重
 	var weight *goquery.Selection
-	weight = d.Find(fmt.Sprintf("%s tr:nth-child(8) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td",basepath))
+	weight = d.Find(fmt.Sprintf("%s tr:nth-child(8) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td", basepath))
 	if len(weight.Text()) == 0 {
 		weight = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(8) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td")
 	}
-	log.Println("体重",weight.Text())
+	log.Println("体重", weight.Text())
 
 	// 体形
 	var tixing *goquery.Selection
-	tixing = d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > img",basepath))
+	tixing = d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > img", basepath))
 	tixingval, tixingexists := tixing.Attr("data-url")
 	if tixingexists {
-		log.Println("体形 ",url+tixingval)
-	}else {
+		log.Println("体形 ", url+tixingval)
+	} else {
 		tixing = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(9) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > img")
 		tixingval, tixingexists := tixing.Attr("data-url")
 		if tixingexists {
-			log.Println("体形 ",url+tixingval)
+			log.Println("体形 ", url+tixingval)
 		}
 	}
 
 	// 脚印
-	jiaoyin := d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td > a",basepath))
+	jiaoyin := d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td > a", basepath))
 	jiaoyinval, jiaoyinexists := jiaoyin.Attr("data-url")
 	if jiaoyinexists {
-		log.Println("体形 ",url+jiaoyinval)
+		log.Println("体形 ", url+jiaoyinval)
 	}
 
 	// 图鉴颜色
 	var color *goquery.Selection
-	color = d.Find(fmt.Sprintf("%s tr:nth-child(10) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > span",basepath))
+	color = d.Find(fmt.Sprintf("%s tr:nth-child(10) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > span", basepath))
 	if len(color.Text()) == 0 {
 		color = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(10) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > span")
 	}
-	log.Println("图鉴颜色 ",color.Text())
+	log.Println("图鉴颜色 ", color.Text())
 
 	// 捕获概率
 	var buchang *goquery.Selection
-	buchang = d.Find(fmt.Sprintf("%s tr:nth-child(10) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td",basepath))
+	buchang = d.Find(fmt.Sprintf("%s tr:nth-child(10) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td", basepath))
 	if len(buchang.Text()) == 0 {
 		buchang = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(10) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td")
 	}
-	log.Println("捕获概率 ",buchang.Text())
+	log.Println("捕获概率 ", buchang.Text())
 	// 性别比例
-	xinbie := d.Find(fmt.Sprintf("%s tr:nth-child(11) > td > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td > span:nth-child",basepath))
+	xinbie := d.Find(fmt.Sprintf("%s tr:nth-child(11) > td > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td > span:nth-child", basepath))
 	if len(xinbie.Text()) == 0 {
 		xinbie = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(11) > td > table > tbody > tr > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td")
 	}
 	xinbie.Each(func(i int, s *goquery.Selection) {
-		log.Println("性别比例 ",s.Text())
+		log.Println("性别比例 ", s.Text())
 	})
 
 	// 培育
-	peiyu := d.Find(fmt.Sprintf("%s tr:nth-child(12) > td > table > tbody > tr > td > table > tbody > tr > td:nth-child(2) > small",basepath))
+	peiyu := d.Find(fmt.Sprintf("%s tr:nth-child(12) > td > table > tbody > tr > td > table > tbody > tr > td:nth-child(2) > small", basepath))
 	if len(peiyu.Text()) == 0 {
 		peiyu = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(12) > td > table > tbody > tr > td > table > tbody > tr > td:nth-child(2) > small")
 	}
-	log.Println("培育 ",peiyu.Text())
+	log.Println("培育 ", peiyu.Text())
 
 	// 基础点数
-	hp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-HP.bd-HP",basepath))
-	log.Println("hp ",hp.Text())
+	hp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-HP.bd-HP", basepath))
+	log.Println("hp ", hp.Text())
 
 	// 攻击力
-	attack := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-攻击.bd-攻击",basepath))
-	log.Println("attack",attack.Text())
+	attack := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-攻击.bd-攻击", basepath))
+	log.Println("attack", attack.Text())
 
 	// 防御力
-	defense := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-防御.bd-防御",basepath))
-	log.Println("defense",defense.Text())
+	defense := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-防御.bd-防御", basepath))
+	log.Println("defense", defense.Text())
 
 	// 特攻
-	tattack := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-特攻.bd-特攻",basepath))
-	log.Println("tattack",tattack.Text())
+	tattack := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-特攻.bd-特攻", basepath))
+	log.Println("tattack", tattack.Text())
 	// 特防
-	tdefense := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-特防.bd-特防",basepath))
-	log.Println("tdefense",tdefense.Text())
+	tdefense := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-特防.bd-特防", basepath))
+	log.Println("tdefense", tdefense.Text())
 
 	// 速度
-	speed := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-速度.bd-速度",basepath))
-	log.Println("speed",speed.Text())
+	speed := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td.roundy.bw-1.bgl-速度.bd-速度", basepath))
+	log.Println("speed", speed.Text())
 
 	// 基础经验值
-	exp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(1) > span:nth-child(3)",basepath))
-	log.Println("exp",exp.Text())
+	exp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(1) > span:nth-child(3)", basepath))
+	log.Println("exp", exp.Text())
 	// 对战经验值
-	attackexp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > span:nth-child(3)",basepath))
-	log.Println("attackexp",attackexp.Text())
+	attackexp := d.Find(fmt.Sprintf("%s tr:nth-child(13) > td > table > tbody > tr > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > span:nth-child(3)", basepath))
+	log.Println("attackexp", attackexp.Text())
 
+	// 找到放置宝可梦种族值的盒子
+	hp2 := d.Find("#mw-content-text").Find("tr.bgl-HP").Eq(0)
+	log.Println("HP2", hp2.Find("div[style='float:right']").Text())
+	// 攻击属性
+	attack2 := d.Find("#mw-content-text").Find("tr.bgl-攻击").Eq(0)
+	log.Println("attack2", attack2.Find("div[style='float:right']").Text())
+	// 防御属性
+	defense2 := d.Find("#mw-content-text").Find("tr.bgl-防御").Eq(0)
+	log.Println("defense2", defense2.Find("div[style='float:right']").Text())
+	// 特攻属性
+	tattack2 := d.Find("#mw-content-text").Find("tr.bgl-特攻").Eq(0)
+	log.Println("tattack2", tattack2.Find("div[style='float:right']").Text())
+	// 特防属性
+	tdefense2 := d.Find("#mw-content-text").Find("tr.bgl-特防").Eq(0)
+	log.Println("tdefense2", tdefense2.Find("div[style='float:right']").Text())
+	// 速度属性
+	speed2 := d.Find("#mw-content-text").Find("tr.bgl-速度").Eq(0)
+	log.Println("speed2", speed2.Find("div[style='float:right']").Text())
+}
+
+func Test5(t *testing.T){
+	atk2int, err := strconv.Atoi("1")
+	if err != nil {
+		panic(err)
+	}
+	log.Println("转换之后",atk2int)
 }

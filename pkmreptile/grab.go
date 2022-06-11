@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"regexp"
 	"reptile/comm"
 	"reptile/dao/pkminfodao"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -110,13 +110,17 @@ func (pkr *PkmReptile) GrabPkomAll()(*[]pkminfodao.Pokemon) {
 	pkms := make([]pkminfodao.Pokemon,len(pkmmap))
 	// 遍历pkmmap
 	for _, v := range pkmmap {
-		var pkm = pkminfodao.Pokemon{
-			Name: v["name"].(string),
-			Number: v["number"].(string),
+
+		if len(v["name"].(string)) > 0{
+			var pkm = pkminfodao.Pokemon{
+				Name: v["name"].(string),
+				Number: v["number"].(string),
+			}
+			// 获取宝可梦的详细信息
+			pkr.grabDetail(&pkm, v["url"].(string))
+			pkms = append(pkms, pkm)
 		}
-		// 获取宝可梦的详细信息
-		pkr.grabDetail(&pkm, v["url"].(string))
-		pkms = append(pkms, pkm)
+		
 	}
 	return &pkms
 }
@@ -127,13 +131,15 @@ func (pkr *PkmReptile) GrabPkomAllMap()(*map[string]*pkminfodao.Pokemon) {
 	pkms := make(map[string]*pkminfodao.Pokemon)
 	// 遍历pkmmap
 	for _, v := range pkmmap {
-		var pkm = &pkminfodao.Pokemon{
-			Name: v["name"].(string),
-			Number: v["number"].(string),
+		if len(v["name"].(string)) > 0{
+			var pkm = &pkminfodao.Pokemon{
+				Name: v["name"].(string),
+				Number: v["number"].(string),
+			}
+			// 获取宝可梦的详细信息
+			pkr.grabDetail(pkm, v["url"].(string))
+			pkms[pkm.Name] = pkm
 		}
-		// 获取宝可梦的详细信息
-		pkr.grabDetail(pkm, v["url"].(string))
-		pkms[pkm.Name] = pkm
 	}
 	return &pkms
 }
@@ -145,10 +151,6 @@ func (pkr *PkmReptile) grabDetail(pkm *pkminfodao.Pokemon, url string) *pkminfod
 	d, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
-	}
-	s := d.Find("#firstHeading")
-	if regexp.MustCompile(`^第(.*)世代`).MatchString(s.Text()) {
-		return pkm
 	}
 	// 拿到数据显示的table表单
 	table := d.Find(".mw-parser-output").Find(".roundy.a-r.at-c")
@@ -426,6 +428,57 @@ func grabexp(fater *goquery.Selection, pkm *pkminfodao.Pokemon) {
 }
 
 func grabrace(d *goquery.Document, pkm *pkminfodao.Pokemon){
-	// TODO
-	
+	// 找到放置宝可梦种族值的盒子
+	hp2 := d.Find("#mw-content-text").Find("tr.bgl-HP").Eq(0)
+	hp2str := hp2.Find("div[style='float:right']").Text()
+	i, err := strconv.Atoi(hp2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.Hp = i
+
+	// 攻击属性
+	atk2 := d.Find("#mw-content-text").Find("tr.bgl-攻击").Eq(0)
+	atk2str := atk2.Find("div[style='float:right']").Text()
+	atk2int, err := strconv.Atoi(atk2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.Attack = atk2int
+
+	// 防御属性
+	def2 := d.Find("#mw-content-text").Find("tr.bgl-防御").Eq(0)
+	def2str := def2.Find("div[style='float:right']").Text()
+	def2int, err := strconv.Atoi(def2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.Defense = def2int
+
+	// 特攻属性
+	spatk2 := d.Find("#mw-content-text").Find("tr.bgl-特攻").Eq(0)
+	spatk2str := spatk2.Find("div[style='float:right']").Text()
+	spatk2int, err := strconv.Atoi(spatk2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.SpAttack = spatk2int
+
+	// 特防属性
+	spdef2 := d.Find("#mw-content-text").Find("tr.bgl-特防").Eq(0)
+	spdef2str := spdef2.Find("div[style='float:right']").Text()
+	spdef2int, err := strconv.Atoi(spdef2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.SpDefense = spdef2int
+
+	// 速度属性
+	speed2 := d.Find("#mw-content-text").Find("tr.bgl-速度").Eq(0)
+	speed2str := speed2.Find("div[style='float:right']").Text()
+	speed2int, err := strconv.Atoi(speed2str)
+	if err != nil {
+		panic(err)
+	}
+	pkm.Speed = speed2int
 }
