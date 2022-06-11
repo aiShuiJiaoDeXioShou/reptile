@@ -1,0 +1,29 @@
+{{define "body/index.html"}}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .win-body {
+        display: flex;
+        padding: 0px 0px 0px 0px;
+    }
+
+    .win-body .win {
+        margin: 0 auto;
+        flex: 0.8;
+        min-width: 85%;
+        max-width: 120%;
+        height: 800px;
+    }
+</style>
+
+<body>
+    <div class="win-body">
+        {{template "body/left" .}}
+        <iframe class="win" src="/wiki/index" frameborder="0" name="windows"></iframe>
+    </div>
+</body>
+
+{{end}}

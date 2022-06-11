@@ -1,0 +1,196 @@
+{{define "user/login.html"}}
+
+<link rel="stylesheet" href="/static/mycss/user/userlogin.css">
+<link rel="stylesheet" href="/static/css/bootstrap-icons/bootstrap-icons.css">
+
+<body>
+    <div class="user_login" id="user_login">
+        <div class="main-container">
+            <div class="pokemon-top-part"></div>
+            <div class="main-forms">
+                <div class="signup-form">
+                    <form id="from" class="sign-back">
+                        <h1>用户登陆</h1>
+                        <div class="signup-row">
+                            <i class="bi bi-envelope-heart"></i>
+                            <input type="text" name="phone" v-model="user.phone" placeholder="电话号码">
+                        </div>
+                        <div style="color: red;text-align: center;font-size: small;" v-text="phone_error"></div>
+                        <div class="signup-row">
+                            <i class="bi bi-key"></i>
+                            <input type="password" name="password" v-model="user.password" placeholder="密码">
+                        </div>
+                        <div style="color: red;text-align: center;font-size: small;" v-text="password_error"></div>
+                        <div class="signup-row">
+                            <a @click="sub">
+                                <i class="bi bi-hand-index"></i>
+                            </a>
+                        </div>
+                        <div class="form-bottom">
+                            <div class="remember">
+                                <input type="checkbox" name="" value="">
+                                <span>同意协议</span>
+                            </div>
+                            <div class="remember">
+                                <a href="#">亲你有什么需要帮助的吗？</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="pokemon-bottom-part">
+                <div class="white-part"></div>
+                <div class="black-line"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="/static/js/fontawesome.js"></script>
+<script src="/static/js/tweenmax.js"></script>
+<script src="/static/js/jquery-3.6.js"></script>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/jquery.cookie.js"></script>
+<script>
+    console.log($.cookie('token2'));
+    new Vue({
+        el: '#user_login',
+        data() {
+            return {
+                hello: '欢迎登陆',
+                phone_error: '',
+                password_error: '',
+                user: {}
+            }
+        },
+        methods: {
+            sub() {
+                // 验证表单是否用户名密码为空
+                var phone = $('input[name="phone"]').val();
+                var password = $('input[name="password"]').val();
+                if (phone == '') {
+                    this.phone_error = '电话号码不能为空';
+                    return false;
+                }
+                if (password == '') {
+                    this.password_error = '密码不能为空';
+                    return false;
+                }
+
+                // 提交表单
+                $.ajax({
+                    url: '/user/login',
+                    data: JSON.stringify(this.user),
+                    method: 'post'
+                }).then(res => {
+                    let token = localStorage.getItem("token")
+                    if (token === '' || token === null || token === undefined) {
+                        localStorage.setItem('token', res.token)
+                    }
+                    // 前往首页
+                    location.href = "/"
+                }).fail(res => {
+                    // alert(res.data)
+                })
+            }
+        }
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        var blackLine = $(".black-line"),
+            ball = $(".main-container"),
+            mainForm = $(".main-forms"),
+            top = $(".pokemon-top-part"),
+            bottom = $(".pokemon-bottom-part"),
+            h = $(".sign-back h1"),
+            row = $(".signup-row"),
+            arrow = $(".signup-row a"),
+            rem = $(".remember"),
+            tl = new TimelineMax();
+
+        // Start
+        tl
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '+=red-circle'
+            })
+            .to(blackLine, 0, {
+                className: '-=red-circle'
+            })
+            .to(ball, 0, {
+                y: "-70%",
+                ease: Power4.easeOut
+            })
+            .to(ball, 0, {
+                y: "-50%",
+                ease: Bounce.easeOut
+            })
+            .to(ball, 0, {
+                y: "-85%",
+                ease: Power4.easeOut
+            }, "+=0.5")
+            .to(ball, 0, {
+                y: "-50%",
+                ease: Bounce.easeOut
+            })
+            .to(ball, 0, {
+                y: "-100%",
+                ease: Power4.easeOut
+            }, "+=0.5")
+            .to(ball, 0.5, {
+                y: "-50%",
+                ease: Bounce.easeOut,
+                onComplete: toggle
+            });
+
+        function toggle(o) {
+            $(".main-forms").slideDown(1500);
+            tl
+                .to(top, 1, {
+                    autoAlpha: 0
+                })
+                .to(bottom, 1, {
+                    autoAlpha: 0
+                }, "-=1")
+                .fromTo(h, 1, {
+                    autoAlpha: 0,
+                    y: -20
+                }, {
+                    autoAlpha: 1,
+                    y: 0
+                }, "+=0.5")
+                .staggerFrom(row, 1, {
+                    left: "-100%",
+                    autoAlpha: 0
+                }, 0.2)
+                .staggerFrom(rem, 1, {
+                    cycle: {
+                        y: [20, -20]
+                    },
+                    autoAlpha: 0
+                }, 0.2)
+
+        }
+
+    })
+</script>
+
+{{end}}
