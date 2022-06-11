@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
 func StartUp(){
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*/*")
