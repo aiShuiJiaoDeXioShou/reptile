@@ -1,0 +1,65 @@
+{{define "user/articleadmin.html"}}
+
+{{template "base"}}
+
+<link rel="stylesheet" href="/static/css/bulma.css">
+<div id="articleadmin_root">
+    <table class="table" border="1">
+        <tr>
+            <th>文章ID</th>
+            <th>文章标题</th>
+            <th>文章作者</th>
+            <th>文章发表时间</th>
+        </tr>
+        {{range $article := .data}}
+        <tr>
+            <td>{{$article.ID}}</td>
+            <td>{{$article.Title}}</td>
+            <td>{{$article.Author}}</td>
+            <td>{{$article.CreatedAt}}</td>
+            <td>
+                <button class="button is-success modify">修改</button>
+                <button class="button is-danger deleteat">删除</button>
+                <a class="button is-info" href="/tribe/article/{{$article.ID}}" target="_blank">查看</a>
+            </td>
+        </tr>
+        {{end}}
+    </table>
+</div>
+
+<script>
+    $(".deleteat").click(function() {
+        alert("删除");
+        // 获取用户id
+        let id = $(this).parent().parent().children().eq(0).text();
+        $.ajax({
+            method: "DELETE",
+            url: "/article/"+id,
+            success: function(data) {
+                // 刷新页面
+                location.reload();
+            },
+            error: function(data) {
+                alert("删除失败");
+            }
+        })
+    });
+
+    // 修改文章信息
+    $(".modify").click(function() {
+        // 获取用户id
+        let id = $(this).parent().parent().children().eq(0).text();
+        window.open("/tribe/article/put/"+id, "_blank");
+    });
+
+</script>
+
+<style>
+    #articleadmin_root {
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        flex-direction: column;
+    }
+</style>
+{{end}}

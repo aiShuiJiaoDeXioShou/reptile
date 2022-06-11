@@ -19,7 +19,7 @@
     <el-row class="tac">
       <el-col :span="4">
 
-        <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"  @select="handleSelect">
+        <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"  @select="handleSelect">
 
           <el-menu-item index="1">
             <i class="el-icon-user"></i>
@@ -52,6 +52,11 @@
           </el-menu-item>
 
           <el-menu-item index="7">
+            <i class="el-icon-edit"></i>
+            <span slot="title">写作</span>
+          </el-menu-item>
+
+          <el-menu-item index="8">
             <i class="el-icon-setting"></i>
             <span slot="title">设置</span>
           </el-menu-item>
@@ -81,7 +86,8 @@
     },
     methods: {
       goBack() {
-        window.history.back();
+        // window.history.back(); 按照历史返回上一个页面
+        window.location.href = "/";
       },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
@@ -92,6 +98,10 @@
       handleSelect(key, keyPath){
         if(key == 1){
           this.src = "/user/setting"
+        }else if(key == 7){
+          this.src = "/user/write"
+        }else if(key == 5){
+          this.src = "/tribe/articleadmin/1"
         }
       }
     },

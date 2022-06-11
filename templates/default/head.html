@@ -26,8 +26,8 @@
                     <a href="/body/index" target="win-root">功能区</a><i class="bi bi-caret-down-fill"></i>
                 </li>
                 <li>
-                    <a href="/tribe/" v-if="user.name != 'yangteng'">部落</a>
-                    <a href="/tribe/" v-if="user.name == 'yangteng'" target="win-root">部落</a>
+                    <a href="/tribe/" v-if="user.name == ''">部落</a>
+                    <a href="/tribe/" v-if="user.name != ''" target="win-root">部落</a>
                     <i class="bi bi-caret-down-fill"></i>
                 </li>
                 <li>

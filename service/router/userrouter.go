@@ -15,6 +15,7 @@ func (myrouter *MyRouter)newUserRouter(router *gin.Engine) {
 	userrouter.GET("/login", myrouter.LoginRouter)
 	userrouter.GET("/setting", myrouter.SeetingRouter)
 	userrouter.GET("/personal",usermiddleware.JurMiddleware, myrouter.PersonalRouter)
+	userrouter.GET("/write",usermiddleware.JurMiddleware, myrouter.WriteRouter)
 }
 
 func (myrouter *MyRouter) RegisterRouter(c *gin.Context) {
@@ -46,3 +47,8 @@ func (myrouter *MyRouter) PersonalRouter(c *gin.Context) {
 	})
 }
 
+func (myrouter *MyRouter) WriteRouter(c *gin.Context) {
+	c.HTML(http.StatusOK, "user/write.html", gin.H{
+		"title": "写文章",
+	})
+}

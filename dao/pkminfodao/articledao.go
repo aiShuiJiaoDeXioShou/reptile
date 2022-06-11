@@ -11,25 +11,25 @@ func init(){
 	dao.DB.AutoMigrate(&Article{}, &ArticleComment{},&ArticleLike{},&ArticleComment{})
 }
 
-func NewArticleManager()(am *ArticleManager){
-	am = &ArticleManager{}
-	am.Dao = dao.DB
-	return
+func NewArticleManager()(*ArticleManager){
+	return &ArticleManager{
+		Dao:dao.DB,
+	}
 }
 
 type (
 	Article struct {
 		gorm.Model
-		Title string `gorm:"type:text;not null" json:"title" validate:"required" query:"title"`
-		Content string `gorm:"type:text;null" json:"content" validate:"required" query:"content"`
+		Title string `gorm:"type:text;not null" json:"title" validate:"required" query:"title" form:"title"`
+		Content string `form:"content" gorm:"type:text;null" json:"content" validate:"required" query:"content"`
 		// 文章类型
 		Type string `gorm:"type:text;null" json:"type" validate:"required" query:"type"`
 		// 文章标签
-		Tag string `gorm:"type:text;null" json:"tag" validate:"required" query:"tag"`
+		Tag string `form:"tag" gorm:"type:text;null" json:"tag" validate:"required" query:"tag"`
 		// 文章作者
-		Author string `gorm:"type:text;null" json:"author" validate:"required" query:"author"`
+		Author string `form:"author" gorm:"type:text;null" json:"author" validate:"required" query:"author"`
 		// 文章作者id
-		AuthorId uint `gorm:"not null" json:"author_id" validate:"required" query:"author_id"`
+		AuthorId uint `form:"author_id" gorm:"not null" json:"author_id" validate:"required" query:"author_id"`
 	}
 	ArticleManager struct {
 		Dao *gorm.DB
@@ -53,15 +53,22 @@ type (
 )
 
 // 添加一篇文章
-func (am *ArticleManager) AddArticle(article *Article) (err error) {
-	err = am.Dao.Create(article).Error
+func (am *ArticleManager) AddArticle(article *Article) error {
+	err := am.Dao.Create(article).Error
+	return err
+}
+
+// 根据id查找文章
+func (am *ArticleManager) FindArticleById(articleId uint) (article Article, err error) {
+	err = am.Dao.Where("id = ?", articleId).Find(&article).Error
 	return
 }
 
 // 查找自己所有的文章
-func (am *ArticleManager) FindAllArticle(userId uint) (articles []Article, err error) {
-	err = am.Dao.Where("author_id = ?", userId).Find(&articles).Error
-	return
+func (am *ArticleManager) FindAllArticle(userId uint) ([]Article,error) {
+	var articles []Article
+	err := am.Dao.Where("author_id = ?", userId).Find(&articles).Error
+	return articles,err
 }
 
 // 删除自己的指定文章
@@ -78,6 +85,7 @@ func (am *ArticleManager) UpdateArticle(article *Article) (err error) {
 
 // 根据tag值推荐文章
 func (am *ArticleManager) FindArticleByTag(tag string) (articles []Article, err error) {
+	articles = []Article{}
 	err = am.Dao.Where("tag = ?", tag).Find(&articles).Error
 	return
 }

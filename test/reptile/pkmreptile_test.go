@@ -5,6 +5,7 @@ import (
 	io "io/ioutil"
 	"log"
 	"regexp"
+	"reptile/comm"
 	"reptile/pkmreptile"
 	"testing"
 	"time"
@@ -40,4 +41,12 @@ func Grab(){
 	m := pkr.GrabPkomAllMap()
 	b, _ := json.Marshal(m)
 	io.WriteFile("D:\\4.goCode\\space-working\\reptile\\static\\json\\pkomallmap.json", b, 0666)
+}
+
+func Test6(t *testing.T){
+	u, err := comm.ParseUint("1")
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(u)
 }
