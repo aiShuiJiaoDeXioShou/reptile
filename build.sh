@@ -1,5 +1,19 @@
 go build # 先把应用打包一下
+
+# 更新git版本
+git add .
+git commit -m "shell自动更新"
+git push -u origin
+
+
+# 移动编译好的文件
 cp reptile.exe build
+
+SourcePath = 'static' #源路径
+Copy_H_File_To_PrjInclude $SourcePath  
+
+SourcePath2 = 'templates'
+Copy_H_File_To_PrjInclude $SourcePath2
 
 #! /bin/bash
 function Copy_H_File_To_PrjInclude() {
@@ -15,9 +29,3 @@ function Copy_H_File_To_PrjInclude() {
 		fi
 	done
 }
-
-SourcePath = 'static' #源路径
-Copy_H_File_To_PrjInclude $SourcePath  
-
-SourcePath2 = 'templates'
-Copy_H_File_To_PrjInclude $SourcePath2
