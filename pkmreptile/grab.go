@@ -8,6 +8,7 @@ import (
 	"reptile/dao/pkminfodao"
 	"strconv"
 	"strings"
+	io "io/ioutil"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
@@ -206,19 +207,30 @@ func (pkr *PkmReptile) grabDetail(pkm *pkminfodao.Pokemon, url string) *pkminfod
 	return pkm
 }
 
-// 把该条数据储存到数据库
-func (pkr *PkmReptile) Save(pkm *pkminfodao.Pokemon) {
+// 把该条数据储存到数据库,记得这个函数使用时一定要异步
+func (pkr *PkmReptile) SaveAllDB() {
+	c := make(chan *[]pkminfodao.Pokemon)
+	go pkr.爬取数据(c)
+	pkms := <- c
+	if len(*pkms) > 0  {
+		// 这里执行数据库操作
+		pdm := pkminfodao.NewPkmDaoManger()
+		log.Println("开始插入数据库",len(*pkms))
+		pdm.InsertPkm(pkms)
+		log.Println("插入数据成功")
+	}
+}
 
+func (pkr *PkmReptile) 爬取数据(c chan *[]pkminfodao.Pokemon) {
+	m := pkr.GrabPkomAll()
+	c <- m
 }
 
 // 把该条数据写入指定文件
 func (pkr *PkmReptile) Write(pkm *pkminfodao.Pokemon) {
-
-}
-
-// 把该条数据JSON化保存
-func (pkr *PkmReptile) SaveJson(pkm *pkminfodao.Pokemon) {
-
+	m := pkr.GrabPkomAllMap()
+	b, _ := json.Marshal(m)
+	io.WriteFile(pkr.SaveFileUrl, b, 0666)
 }
 
 // 获取pkm立绘
