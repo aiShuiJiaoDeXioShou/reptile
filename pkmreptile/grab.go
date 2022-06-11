@@ -1,21 +1,32 @@
 package pkmreptile
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
+	"reptile/comm"
 	"reptile/dao/pkminfodao"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gin-gonic/gin"
 )
 
 type (
 	// 宝可梦指定爬虫管理器
 	PkmReptile struct {
 		Url         string              // 需要抓取的链接
-		Pkm         *pkminfodao.Pokemon // 宝可梦数据库数据源
+		pkm         *pkminfodao.PkmDaoManger // 宝可梦数据库数据源
+		d 			*goquery.Document // 全局的抓取对象,方便链式调用
 		SaveFileUrl string              // 指定读取的文件路径
 		Pkmmap      map[string]string   // 用于存放的map
+	}
+	areaID struct{
+		GuanDu string
+		ChenDu string
+		Kaluosi string
+		LaJiaEr string
 	}
 )
 // 被抓取值的首页路径
@@ -27,42 +38,117 @@ func (pkr *PkmReptile) Grab() (pkm *pkminfodao.Pokemon) {
 	return
 }
 
-// 抓取宝可梦基本信息
-func (pkr *PkmReptile) GrabInfo(pkm1 *pkminfodao.Pokemon) (pkm *pkminfodao.Pokemon) {
+// 只有先调用这个函数才能使用该结构体的所有函数
+func NewPkmReptile() *PkmReptile {
+	// 设置抓取的宝可梦路径
 	baseurl := "https://wiki.52poke.com"
 	url := baseurl + "/wiki/%E5%AE%9D%E5%8F%AF%E6%A2%A6%E5%88%97%E8%A1%A8%EF%BC%88%E6%8C%89%E5%85%A8%E5%9B%BD%E5%9B%BE%E9%89%B4%E7%BC%96%E5%8F%B7%EF%BC%89/%E7%AE%80%E5%8D%95%E7%89%88#.E7.AC.AC.E4.B8.80.E4.B8.96.E4.BB.A3"
+
+	// 创建抓取的宝可梦对象
 	d, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	d.Find(".eplist").Each(func(i int, s *goquery.Selection) {
+
+	return &PkmReptile{
+		Url: "https://wiki.52poke.com",
+		d: d,
+		pkm: pkminfodao.NewPkmDaoManger(),
+		SaveFileUrl: "./pkm.txt",
+		Pkmmap: make(map[string]string),
+	}
+}
+
+// 抓取宝可梦基本信息
+func (pkr *PkmReptile) GrabInfo(pkm *pkminfodao.Pokemon,name string) (*pkminfodao.Pokemon) {
+	// 抓取该目标值
+	pkr.d.Find(".eplist").Each(func(i int, s *goquery.Selection) {
 		node := s.Find("td")
 		node.Find("a").Each(func(i int, s *goquery.Selection) {
-			if s.Text() == "烈咬陆鲨" {
+			if s.Text() == name {
 				// 序号
 				number := s.Parent().Parent().Children().Eq(0).Text()
 				pkm.Number = number
-				log.Print("序号:", number)
 				// 名称
-				log.Print("昵称:", s.Text())
 				pkm.Name = s.Text()
 				if val, exists := s.Attr("href"); exists {
-					pkr.grabDetail(pkm, baseurl+val)
+					pkr.grabDetail(pkm, pkr.Url+val)
 				}
 				return
 			}
 		})
 	})
-	return
+
+	return pkm
+}
+
+// 抓取所有宝可梦的链接,以及名称的map
+func (pkr *PkmReptile) GrabBasicsPkm() map[string]gin.H {
+	hash := make(map[string]gin.H)
+	// 抓取该目标值
+	pkr.d.Find(".eplist").Each(func(i int, s *goquery.Selection) {
+		node := s.Find("td")
+		node.Find("a").Each(func(i int, s *goquery.Selection) {
+			// comm.IsChinese 是判断抓取目标是不是中文
+			number := s.Parent().Parent().Children().Eq(0).Text()
+			if val, exists := s.Attr("href");exists&&comm.IsChinese(s.Text()) {
+				hash[s.Text()] = gin.H{
+					"url": pkr.Url+val,
+					"name": s.Text(),
+					"number": number,
+				}
+			}
+
+		})
+	})
+	return hash
+}
+
+// 抓取所有的宝可梦信息
+func (pkr *PkmReptile) GrabPkomAll()(*[]pkminfodao.Pokemon) {
+	pkmmap := pkr.GrabBasicsPkm()
+	pkms := make([]pkminfodao.Pokemon,len(pkmmap))
+	// 遍历pkmmap
+	for _, v := range pkmmap {
+		var pkm = pkminfodao.Pokemon{
+			Name: v["name"].(string),
+			Number: v["number"].(string),
+		}
+		// 获取宝可梦的详细信息
+		pkr.grabDetail(&pkm, v["url"].(string))
+		pkms = append(pkms, pkm)
+	}
+	return &pkms
+}
+
+// 抓取所有的宝可梦信息返回值为Map
+func (pkr *PkmReptile) GrabPkomAllMap()(*map[string]*pkminfodao.Pokemon) {
+	pkmmap := pkr.GrabBasicsPkm()
+	pkms := make(map[string]*pkminfodao.Pokemon)
+	// 遍历pkmmap
+	for _, v := range pkmmap {
+		var pkm = &pkminfodao.Pokemon{
+			Name: v["name"].(string),
+			Number: v["number"].(string),
+		}
+		// 获取宝可梦的详细信息
+		pkr.grabDetail(pkm, v["url"].(string))
+		pkms[pkm.Name] = pkm
+	}
+	return &pkms
 }
 
 
-
 // 抓取详细信息
+
 func (pkr *PkmReptile) grabDetail(pkm *pkminfodao.Pokemon, url string) *pkminfodao.Pokemon {
 	d, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal(err)
+	}
+	s := d.Find("#firstHeading")
+	if regexp.MustCompile(`^第(.*)世代`).MatchString(s.Text()) {
+		return pkm
 	}
 	// 拿到数据显示的table表单
 	table := d.Find(".mw-parser-output").Find(".roundy.a-r.at-c")
@@ -110,7 +196,11 @@ func (pkr *PkmReptile) grabDetail(pkm *pkminfodao.Pokemon, url string) *pkminfod
 	// 培育
 	grabevo(d, pkm)
 
+	// 基本属性
 	grabbaseattr(d, pkm)
+
+	// 种族值
+	grabrace(d, pkm)
 	return pkm
 }
 
@@ -148,13 +238,11 @@ func grabattr(table *goquery.Selection, pkm *pkminfodao.Pokemon) {
 	s.Find("a").Each(func(i int, s *goquery.Selection) {
 		if str, err := s.Attr("title"); err && strings.Contains(str, "（属性）") {
 			prop += str
-			log.Println(str)
 		}
 
 		if str, err := s.Attr("title"); err && strings.Contains(str, "分类") {
 			s2 := s.Parent().Next().Find("td")
 			category += s2.Text()
-			log.Println(s2.Text())
 		}
 	})
 	pkm.Property = prop
@@ -172,10 +260,8 @@ func grabability(fater *goquery.Selection, pkm *pkminfodao.Pokemon) {
 				s2 := s.Next().Next()
 				if len(s2.Text()) > 0 {
 					ability += str + ":" + s2.Text() + ";"
-					log.Println(str, s2.Text())
 				} else {
 					ability += str
-					log.Println(str)
 				}
 
 			}
@@ -224,7 +310,7 @@ func grabfoot(d *goquery.Document, pkm *pkminfodao.Pokemon, url string) {
 	jiaoyin := d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td > a", basepath))
 	jiaoyinval, jiaoyinexists := jiaoyin.Attr("data-url")
 	if jiaoyinexists {
-		log.Println("体形 ", url+jiaoyinval)
+		pkm.Foot = url + jiaoyinval
 	}
 
 }
@@ -236,7 +322,7 @@ func grabcolor(d *goquery.Document, pkm *pkminfodao.Pokemon) {
 	if len(color.Text()) == 0 {
 		color = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(10) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > span")
 	}
-	log.Println("图鉴颜色 ", color.Text())
+	pkm.Color = color.Text()
 }
 
 // 捕获概率
@@ -246,7 +332,7 @@ func grabcatchrate(d *goquery.Document, pkm *pkminfodao.Pokemon) {
 	if len(buchang.Text()) == 0 {
 		buchang = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(10) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td")
 	}
-	log.Println("捕获概率 ", buchang.Text())
+	pkm.CaptureRate = buchang.Text()
 }
 
 // 性别比例
@@ -266,7 +352,7 @@ func grabevo(d *goquery.Document, pkm *pkminfodao.Pokemon) {
 	if len(peiyu.Text()) == 0 {
 		peiyu = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(12) > td > table > tbody > tr > td > table > tbody > tr > td:nth-child(2) > small")
 	}
-	log.Println("培育 ", peiyu.Text())
+	pkm.EvolutionCycle = peiyu.Text()
 }
 
 // 身高
@@ -276,7 +362,7 @@ func grabheight(d *goquery.Document, pkm *pkminfodao.Pokemon) {
 	if len(height.Text()) == 0 {
 		height = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(8) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td")
 	}
-	log.Println("身高 ", height.Text())
+	pkm.Height = height.Text()
 }
 
 // 体重
@@ -286,7 +372,7 @@ func grabweight(d *goquery.Document, pkm *pkminfodao.Pokemon) {
 	if len(weight.Text()) == 0 {
 		weight = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(8) > td:nth-child(2) > table > tbody > tr > td > table > tbody > tr > td")
 	}
-	log.Println("体重", weight.Text())
+	pkm.Weight = weight.Text()
 }
 
 // 体型
@@ -295,33 +381,41 @@ func grabshape(d *goquery.Document, pkm *pkminfodao.Pokemon, url string) {
 	tixing = d.Find(fmt.Sprintf("%s tr:nth-child(9) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > img", basepath))
 	tixingval, tixingexists := tixing.Attr("data-url")
 	if tixingexists {
-		log.Println("体形 ", url+tixingval)
+		pkm.Body = url + tixingval
 	} else {
 		tixing = d.Find("#mw-content-text > div > table:nth-child(2) > tbody > tr._toggle.form1 > td > table > tbody > tr:nth-child(9) > td:nth-child(1) > table > tbody > tr > td > table > tbody > tr > td > a > img")
 		tixingval, tixingexists := tixing.Attr("data-url")
 		if tixingexists {
-			log.Println("体形 ", url+tixingval)
+			pkm.Body = url + tixingval
 		}
 	}
 }
 
+
+
 // 地区图鉴编号
 func grabareaid(d *goquery.Document, pkm *pkminfodao.Pokemon) {
+	var areaid areaID
 	// 关都地区
 	guandu := d.Find("td.bd-关都.bw-1.roundyright").Eq(0)
-	log.Println("关都地区 ", guandu.Text())
+	areaid.GuanDu = "关都地区->"+guandu.Text()
 
 	// 成都地区
 	chendu := d.Find(".bd-城都.bw-1").Eq(0)
-	log.Println("成都地区 ", chendu.Text())
+	areaid.ChenDu = "成都地区->"+chendu.Text()
 
 	// 卡洛斯地区
 	kls := d.Find(".bd-卡洛斯.bw-1.roundyright").Eq(0)
-	log.Println("卡洛斯地区 ", kls.Text())
+	areaid.Kaluosi = "卡洛斯地区->"+ kls.Text()
 
 	// 伽勒尔地区
 	jls := d.Find("td.bd-伽勒尔.bw-1.roundyright").Eq(0)
-	log.Println("伽勒尔地区 ", jls.Text())
+	areaid.LaJiaEr = "伽勒尔地区 ->"+jls.Text()
+	b, err := json.Marshal(areaid)
+	if err != nil {
+		panic(err)
+	}
+	pkm.Area = string(b)
 }
 
 // 经验值
@@ -329,4 +423,9 @@ func grabexp(fater *goquery.Selection, pkm *pkminfodao.Pokemon) {
 	ex := fater.Eq(4)
 	log.Println("经验值:", ex.Find("td").Text())
 	pkm.BaseExp = ex.Find("td").Text()
+}
+
+func grabrace(d *goquery.Document, pkm *pkminfodao.Pokemon){
+	// TODO
+	
 }

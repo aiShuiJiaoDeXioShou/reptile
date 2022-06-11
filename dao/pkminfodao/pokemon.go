@@ -1,6 +1,10 @@
 package pkminfodao
 
-import "gorm.io/gorm"
+import (
+	"reptile/dao"
+
+	"gorm.io/gorm"
+)
 
 // 这里存放关于宝可梦相关的信息
 type(
@@ -33,7 +37,7 @@ type(
 		// 图鉴颜色
 		Color string `json:"color" validate:"required" query:"color"`
 		// 捕获率
-		CaptureRate int `json:"capture_rate" validate:"required" query:"capture_rate"`
+		CaptureRate string `json:"capture_rate" validate:"required" query:"capture_rate"`
 		// 培育周期
 		EvolutionCycle string `json:"evolution_cycle" validate:"required" query:"evolution_cycle"`
 		// 基础点数
@@ -54,4 +58,13 @@ type(
 		// 对战经验值
 		BattleExp int `json:"battle_exp" validate:"required" query:"battle_exp"`
 	}
+	PkmDaoManger struct {
+		db *gorm.DB
+	}
 )
+
+func NewPkmDaoManger() *PkmDaoManger {
+	return &PkmDaoManger{
+		db: dao.DB,
+	}
+}
