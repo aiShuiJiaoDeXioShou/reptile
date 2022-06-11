@@ -1,6 +1,6 @@
-build
-.idea
-icon.rc
-sss.syso
-test
-image
+/.idea/
+/icon.rc/
+/sss.syso/
+/test/
+/image/
+/build/
