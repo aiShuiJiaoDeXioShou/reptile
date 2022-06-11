@@ -12,16 +12,22 @@
             <div class="model-dynamic">
                 <div class="model-dynamic-title"><i style="color: #f759ab;">快报:</i> 智蛙终将闪电归来,以雷霆之势虐杀全场</div>
                 <el-carousel height="50%">
-                    <el-carousel-item v-for="item in 4" :key="item">
-                        <h3 class="small" v-text="item"></h3>
+                    <el-carousel-item v-for="(item,index) in image" :key="index">
+                        <a href="#">
+                            <img class="exhibition-image" :src="item" :alt="index">
+                        </a>
                     </el-carousel-item>
                 </el-carousel>
                 <div class="model-dynamic-content">
                     <div class="info">
                         <h2><i class="el-icon-info"></i> 近日咨询</h2>
-                        <el-link icon="el-icon-eleme" class="link" v-for="(item, index) in 10" :key="index" type="info"
-                            v-text="'震惊小编也被震惊到了，不然为何叫做震惊体'+item">
-                        </el-link>
+                        <div v-for="(item, index) in 10" :key="index">
+                            <a href="#" class="link">
+                                <i class="bi bi-newspaper" style="color: #efdbff;"></i>
+                                <span class="span-text" style="color: #efdbff;">小编已死无法再编</span>
+                            </a>
+                        </div>
+
                     </div>
                     <div class="periphery">
                         <h2><i class="el-icon-help"></i> 周边信息</h2>
@@ -163,10 +169,6 @@
     </div>
 </div>
 
-<script src="/static/js/vue.js"></script>
-<!-- 引入组件库 -->
-<script src="/static/js/elmentui.js"></script>
-
 <!-- 引入图表库 -->
 <script src="/static/js/chart.js"></script>
 
@@ -177,6 +179,12 @@
             return {
                 msg: 'Hello Vue!',
                 sex: 0,
+                image:[
+                    "/static/img/bkm1.jpg",
+                    "/static/img/bkm2.jpg",
+                    "/static/img/bkm3.jpg",
+                    "/static/img/bkm4.jpg",
+                ]
             }
         },
         methods: {

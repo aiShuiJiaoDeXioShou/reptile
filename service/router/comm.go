@@ -29,6 +29,7 @@ func (myrouter *MyRouter)InitForHtml(router *gin.Engine) {
 	router.GET("/body/model", myrouter.ModelRouter)
 	myrouter.newUserRouter(router)
 	myrouter.newWikiRouter(router)
+	myrouter.NewTribeRouter(router)
 }
 
 // 模块化的首页

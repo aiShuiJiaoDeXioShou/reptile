@@ -2,7 +2,6 @@ package userservice
 
 import (
 	"log"
-	"net/http"
 	"reptile/comm"
 	"reptile/dao/userdao"
 
@@ -76,7 +75,7 @@ func userRegister(ctx *gin.Context) {
 // 用户登录验证
 func userLogin(ctx *gin.Context) {
 	var user userdao.User
-	ctx.ShouldBind(&user)
+	ctx.BindJSON(&user)
 	daouser, err := userdao.FindUserByPhone(user.Phone)
 	if err != nil {
 		log.Println(err)
@@ -93,7 +92,7 @@ func userLogin(ctx *gin.Context) {
 	now := time.Now()
 	//将当前时间转化为int64
 	timestamp := now.Unix()
-	token, err := comm.GetToken("YANGTENG", timestamp, 604800, daouser.ID)
+	token, err := comm.GetToken("YANGTENG", timestamp,  24*60*60*7, daouser.ID)
 	if err != nil {
 		log.Println(err)
 		comm.RestApi(500, ctx, "生成token失败")
@@ -101,11 +100,11 @@ func userLogin(ctx *gin.Context) {
 	}
 
 	// 将user存入Cookie,设置过期时间为7天
-	ctx.SetCookie("token", token, 604800, "/", "localhost", false, true)
-	ctx.HTML(http.StatusOK, "default/index.html", gin.H{
+	ctx.SetCookie("token", token, 24*60*60*7, "/", "localhost", false, true)
+	ctx.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "登入成功",
 		"token": token,
-		"code":  200,
-		"msg":   "success",
 	})
 }
 
@@ -119,4 +118,14 @@ func userUpdate(ctx *gin.Context) {
 		return
 	}
 	comm.RestApi(200, ctx, user)
+}
+
+// 退出登入
+func userLogout(ctx *gin.Context) {
+	// 清除该tonken
+	ctx.SetCookie("token", "", -1, "/", "localhost", false, true)
+	ctx.JSON(200, gin.H{
+		"code": 200,
+		"msg":  "退出登录成功",
+	})
 }

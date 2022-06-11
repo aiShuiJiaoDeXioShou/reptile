@@ -15,7 +15,7 @@ func JurMiddleware(c *gin.Context) {
 	// 如果连token都没有拿到那肯定没有登入
 	if err != nil {
 		c.HTML(http.StatusOK, "default/index.html", gin.H{
-			"title": "用户还未登入",
+			"error": "用户还未登入",
 		})
 		return
 	}
@@ -25,7 +25,7 @@ func JurMiddleware(c *gin.Context) {
 	if tokenerr != nil {
 		log.Println(tokenerr)
 		c.HTML(http.StatusOK, "default/index.html", gin.H{
-			"title": "token的值是错的或者过期了需要重新登入",
+			"error": "token的值是错的或者过期了需要重新登入",
 		})
 		return
 	}
@@ -36,9 +36,16 @@ func JurMiddleware(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		c.HTML(http.StatusOK, "default/index.html", gin.H{
-			"title": "没有找到该token对应的用户",
+			"error": "没有找到该token对应的用户",
 		})
 		return
+	}
+
+	// 判断用户是否具有某个权限,默认为使用这个中间件的路由组件都登入了
+	// 获取传递的路由地址
+	url := c.Request.URL.Path
+	if(url == "/admin"){
+
 	}
 
 	// 登入之后将值储存到局部域里面
