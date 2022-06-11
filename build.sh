@@ -5,7 +5,7 @@ rm -rf build
 mkdir build
 
 # 移动编译好的文件
-cp -R reptile.exe static templates build
+cp -R reptile.exe terror.db static templates build
 
 # 更新git版本
 git add .
