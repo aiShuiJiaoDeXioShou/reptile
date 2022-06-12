@@ -7,7 +7,7 @@ import (
 )
 
 // 这里存放关于宝可梦相关的信息
-type(
+type (
 	Pokemon struct {
 		gorm.Model
 		// 官方编号
@@ -58,6 +58,7 @@ type(
 		// 对战经验值
 		BattleExp int `json:"battle_exp" validate:"required" query:"battle_exp"`
 	}
+
 	PkmDaoManger struct {
 		db *gorm.DB
 	}
@@ -101,6 +102,13 @@ func (p *PkmDaoManger) FindPkmById(id int) *Pokemon {
 func (p *PkmDaoManger) FindPkmByPage(page int, limit int) *[]Pokemon {
 	var pkm []Pokemon
 	p.db.Limit(limit).Offset(page).Find(&pkm)
+	return &pkm
+}
+
+// 查询一组ids的数据
+func (p *PkmDaoManger) FindPkmByIds(ids []uint) *[]Pokemon {
+	var pkm []Pokemon
+	p.db.Where("id in (?)", ids).Find(&pkm)
 	return &pkm
 }
 

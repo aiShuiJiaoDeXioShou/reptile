@@ -14,7 +14,10 @@ var (
 )
 
 func init() {
-	dao.AutoMigrate(&User{})
+	err := dao.AutoMigrate(&User{})
+	if err != nil {
+		return
+	}
 	dao.AutoMigrate(&Account{})
 	dao.AutoMigrate(&Role{})
 	dao.AutoMigrate(&UserRole{})
