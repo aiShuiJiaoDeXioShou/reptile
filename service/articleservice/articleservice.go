@@ -9,29 +9,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var(
+var (
 	am *pkminfodao.ArticleManager
 )
 
-func init(){
+func init() {
 	am = pkminfodao.NewArticleManager()
 }
 
 // 文章服务类
 func StartArticleService(router *gin.Engine) {
-	 rg := router.Group("/article",usermiddleware.JurMiddleware)
-	 
-	 // 添加一个文章
-	 rg.POST("/",AddArticle)
+	rg := router.Group("/article", usermiddleware.UserLoginJudgeMiddleware)
 
-	 // 删除一个文章
-	 rg.DELETE("/:id",DeleteArticle)
+	// 添加一个文章
+	rg.POST("/", AddArticle)
 
-	 // 修改该文章
-	 rg.PUT("/:id",UpdateArticle)
+	// 删除一个文章
+	rg.DELETE("/:id", DeleteArticle)
+
+	// 修改该文章
+	rg.PUT("/:id", UpdateArticle)
 }
 
-func AddArticle(ctx *gin.Context){
+func AddArticle(ctx *gin.Context) {
 	value, exists := ctx.Get("current_user")
 	if !exists {
 		ctx.JSON(500, gin.H{
@@ -55,14 +55,14 @@ func AddArticle(ctx *gin.Context){
 		})
 		return
 	}
-	
+
 	ctx.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "添加文章成功",
 	})
 }
 
- func DeleteArticle(ctx *gin.Context) {
+func DeleteArticle(ctx *gin.Context) {
 	id := ctx.Param("id")
 	// 将stringid强转为uid类型
 	i, qerr := strconv.Atoi(id)

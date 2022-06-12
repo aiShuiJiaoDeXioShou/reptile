@@ -9,9 +9,7 @@
 
 <body>
   <!-- 引入组件库 -->
-  <script src="/static/js/vue.js"></script>
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  {{template "base"}}
   <div id="userapp">
     <!-- 页头 -->
     <el-page-header @back="goBack" content="{{.title}}"></el-page-header>
@@ -56,7 +54,12 @@
             <span slot="title">写作</span>
           </el-menu-item>
 
-          <el-menu-item index="8">
+          <el-menu-item index="8" v-if="is_admin">
+            <i class="el-icon-edit"></i>
+            <span slot="title">Admin</span>
+          </el-menu-item>
+
+          <el-menu-item index="9">
             <i class="el-icon-setting"></i>
             <span slot="title">设置</span>
           </el-menu-item>
@@ -66,7 +69,7 @@
       </el-col>
 
       <!-- 这个是主要内容放置的地方 -->
-      <el-col :span="20">
+      <el-col :span="20" v-loading="loading">
         <iframe class="main" :src="src" frameborder="0" scrolling="no"></iframe>
       </el-col>
 
@@ -81,7 +84,9 @@
       return {
         visible: false,
         text: "变身奥特曼",
-        src:'/user/setting'
+        src:'/user/setting',
+        is_admin: false,
+        loading: false,
       }
     },
     methods: {
@@ -96,15 +101,36 @@
         console.log(key, keyPath);
       },
       handleSelect(key, keyPath){
+        this.loading = true;
         if(key == 1){
           this.src = "/user/setting"
+          this.loading = false;
         }else if(key == 7){
           this.src = "/user/write"
+          this.loading = false;
         }else if(key == 5){
           this.src = "/tribe/articleadmin/1"
+          this.loading = false;
+        }else if (key == 8){
+          this.src = "/user/adminview"
+          this.loading = false;
         }
       }
     },
+    mounted(){
+      // 判断用户是否为管理员
+      $.ajax({
+        url: "/user/admin",
+        type: "GET",
+        dataType: "json",
+        success(data){
+          console.log(data)
+          if(data.code === 200){
+            vue.is_admin = true
+          }
+        }
+      })
+    }
   })
 </script>
 

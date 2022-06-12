@@ -3,7 +3,9 @@ package userservice
 import (
 	"log"
 	"reptile/comm"
+	"reptile/comm/res"
 	"reptile/dao/userdao"
+	"reptile/middleware/usermiddleware"
 
 	"time"
 
@@ -17,18 +19,27 @@ func UserSerice(router *gin.Engine) {
 
 	r := router.Group("/user")
 
-	r.GET("/", getUser)
+	{
+		r.GET("/", getUser)
 
-	r.GET("/:phone", getUserByPhone)
+		r.GET("/:phone", getUserByPhone)
 
-	// 创建一个用户
-	r.POST("/", userRegister)
+		// 创建一个用户
+		r.POST("/", userRegister)
 
-	// 更新用户信息
-	r.PUT("/",userUpdate)
+		// 更新用户信息
+		r.PUT("/", userUpdate)
 
-	// 用户登入验证
-	r.POST("/login",userLogin)
+		// 用户登入验证
+		r.POST("/login", userLogin)
+
+		// 判断用户是否为管理员
+		r.GET("/admin", func(context *gin.Context) {
+			usermiddleware.RoleMiddleware(context, []string{"admin"})
+			context.JSON(200, res.Ok("该用户拥有管理员权限"))
+		})
+	}
+
 }
 
 // 根据token值获取user
@@ -92,7 +103,7 @@ func userLogin(ctx *gin.Context) {
 	now := time.Now()
 	//将当前时间转化为int64
 	timestamp := now.Unix()
-	token, err := comm.GetToken("YANGTENG", timestamp,  24*60*60*7, daouser.ID)
+	token, err := comm.GetToken("YANGTENG", timestamp, 24*60*60*7, daouser.ID)
 	if err != nil {
 		log.Println(err)
 		comm.RestApi(500, ctx, "生成token失败")
@@ -102,8 +113,8 @@ func userLogin(ctx *gin.Context) {
 	// 将user存入Cookie,设置过期时间为7天
 	ctx.SetCookie("token", token, 24*60*60*7, "/", "localhost", false, true)
 	ctx.JSON(200, gin.H{
-		"code": 200,
-		"msg":  "登入成功",
+		"code":  200,
+		"msg":   "登入成功",
 		"token": token,
 	})
 }
@@ -114,7 +125,7 @@ func userUpdate(ctx *gin.Context) {
 	ctx.BindJSON(&user)
 	err := userdao.UpdateUser(&user)
 	if err != nil {
-		comm.RestApi(201,ctx,"用户更新操作失败！")
+		comm.RestApi(201, ctx, "用户更新操作失败！")
 		return
 	}
 	comm.RestApi(200, ctx, user)

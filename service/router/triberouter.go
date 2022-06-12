@@ -12,13 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var(
+var (
 	am = pkminfodao.NewArticleManager()
 )
 
 func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 	rg := router.Group("/tribe")
-	rg.Use(usermiddleware.JurMiddleware)
+	rg.Use(usermiddleware.UserLoginJudgeMiddleware)
 
 	rg.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "tribe/index.html", gin.H{
@@ -38,11 +38,11 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 			})
 			return
 		}
-		ctx.HTML(200,"user/updatearticle.html" ,gin.H{
+		ctx.HTML(200, "user/updatearticle.html", gin.H{
 			"code": 200,
 			"data": a,
 			"msg":  "查询文章成功！",
-		})			
+		})
 	})
 
 	rg.GET("/article/:id", func(ctx *gin.Context) {
@@ -50,7 +50,7 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 		id := ctx.Param("id")
 		log.Println("获取到的id是", id)
 		var iduid uint
-		
+
 		// 绑定iduint
 		ctx.ShouldBindUri(&iduid)
 		log.Println("获取到的iduid是", iduid)
@@ -64,7 +64,7 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 			})
 			return
 		}
-		
+
 		// 根据id从数据库获取文章
 		comments, err := am.FindArticleById(uint(idUint))
 		if err != nil {
@@ -76,19 +76,19 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 		}
 
 		ctx.HTML(http.StatusOK, "combat/article.html", gin.H{
-			"title": "文章",
-			"id":    id,
+			"title":   "文章",
+			"id":      id,
 			"article": comments,
 		})
 	})
 
-	rg.GET("/articleadmin/:pagesize",func(ctx *gin.Context) {
+	rg.GET("/articleadmin/:pagesize", func(ctx *gin.Context) {
 		var pagesize int
 		ctx.BindUri(&pagesize)
 		value, exists := ctx.Get("current_user")
 		if !exists {
 			ctx.HTML(http.StatusOK, "tribe/index.html", gin.H{
-				"code": http.StatusUnauthorized,
+				"code":  http.StatusUnauthorized,
 				"title": "你还未登入，请先登入账号",
 			})
 			return
@@ -102,10 +102,10 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 			})
 			return
 		}
-		ctx.HTML(200,"user/articleadmin.html",gin.H{
-			"code":200,
-			"msg":"获取文章列表成功",
-			"data":articles,
+		ctx.HTML(200, "user/articleadmin.html", gin.H{
+			"code": 200,
+			"msg":  "获取文章列表成功",
+			"data": articles,
 		})
 	})
 }

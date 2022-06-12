@@ -7,7 +7,7 @@
 
 <div id="appmodel">
     <!-- 上面是一些动态模块，介绍宝可梦的最新进展-->
-    <el-row class="model-1">
+    <el-row id="app_model_vue" class="model-1">
         <el-col :span="12">
             <div class="model-dynamic">
                 <div class="model-dynamic-title"><i style="color: #f759ab;">快报:</i> 智蛙终将闪电归来,以雷霆之势虐杀全场</div>
@@ -174,7 +174,7 @@
 
 <script>
     const modelapp = new Vue({
-        el: '#appmodel',
+        el: '#app_model_vue',
         data() {
             return {
                 msg: 'Hello Vue!',

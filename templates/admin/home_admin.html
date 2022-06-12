@@ -1,0 +1,247 @@
+{{define "admin/home_admin.html"}}
+
+{{template "base"}}
+<div id="home_admin">
+    <div style="display: flex;">
+        <h1>{{.title}}</h1>
+        <el-button :icon="flush" circle @click="flushFunc"></el-button>
+        <el-button circle @click="add">add</el-button>
+    </div>
+    <template>
+        <!--显示数据的地方-->
+        <el-table :data="tableData" style="width: 100%;" max-height="600">
+            <el-table-column label="ID" prop="ID">
+            </el-table-column>
+
+            <el-table-column label="title" prop="title">
+            </el-table-column>
+
+            <el-table-column label="创建时间" prop="CreatedAt">
+            </el-table-column>
+
+            <el-table-column label="更新时间" prop="UpdatedAt">
+            </el-table-column>
+
+            <el-table-column label="关联数据ID" prop="article_id">
+            </el-table-column>
+
+            <el-table-column label="类型" prop="type">
+            </el-table-column>
+
+            <el-table-column label="图片路径" prop="image_url">
+            </el-table-column>
+
+            <el-table-column label="详细介绍" prop="description">
+            </el-table-column>
+
+            <el-table-column align="right">
+
+                <template slot="header" slot-scope="scope">
+                    <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
+                </template>
+
+                <template slot-scope="scope">
+                    <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+
+                    <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete
+                    </el-button>
+                </template>
+
+            </el-table-column>
+
+        </el-table>
+
+        <el-pagination background @current-change="pageSizeChange" layout="prev, pager, next" :total="count">
+        </el-pagination>
+
+        <el-dialog title="提示" :visible.sync="updateDialogVisible" width="30%" @close="handleClose">
+            <span>这是一段信息</span>
+            <el-form ref="hot" :model="hot">
+
+                <el-form-item v-if="isadd" label="创建时间">
+                    <input type="text" v-model="hot.CreatedAt"></input>
+                </el-form-item>
+
+                <el-form-item label="title">
+                    <el-input type="text" v-model="hot.title"></el-input>
+                </el-form-item>
+
+                <el-form-item v-if="isadd" label="更新时间">
+                    <el-input v-model="hot.UpdatedAt"></el-input>
+                </el-form-item>
+
+                <el-form-item label="关联数据ID">
+                    <el-input type="number" v-model.number="hot.article_id"></el-input>
+                </el-form-item>
+
+                <el-form-item label="类型">
+                    <el-input v-model="hot.type"></el-input>
+                </el-form-item>
+
+                <el-form-item label="图片路径">
+                    <el-input v-model="hot.image_url"></el-input>
+                </el-form-item>
+
+                <el-form-item label="详细介绍">
+                    <el-input v-model="hot.description"></el-input>
+                </el-form-item>
+
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="updateDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="updateDialogVisible = false">确 定</el-button>
+            </span>
+
+        </el-dialog>
+    </template>
+</div>
+
+<script type="text/javascript">
+    let home_admin = new Vue({
+        el: "#home_admin",
+        data() {
+            return {
+                tableData: [],
+                search: '',
+                page: 0,
+                count: 0,
+                updateDialogVisible: false,
+                hot: {
+                    ID: 0,
+                    title: '',
+                    article_id: 0,
+                    type: '',
+                    image_url: '',
+                    description: '',
+                    isadd: false,
+                },
+                isadd: false,
+                flush: 'el-icon-refresh-left'
+            }
+        },
+        methods: {
+            handleEdit(index, row) {
+                this.isadd = true;
+                this.updateDialogVisible = true;
+                this.hot = row;
+            },
+            handleDelete(index, row) {
+
+                this.open(() => {
+                    $.ajax({
+                        url: "/admin/homepage/" + row.ID,
+                        type: "JSON",
+                        method: "DELETE"
+                    }).then((data) => {
+                        if (data.code == 200) {
+                            home_admin.getData(home_admin.page);
+                        }
+                    })
+                    return true
+                })
+
+            },
+            flushFunc() {
+                this.flush = 'el-icon-loading'
+                $.ajax({
+                    url: "/admin/homepage/",
+                    method: "GET"
+                }).then((data) => {
+                    if (data.code == 200) {
+                        home_admin.flush = 'el-icon-refresh-left'
+                        home_admin.getData(home_admin.page);
+                    }
+                })
+            },
+            add() {
+                this.updateDialogVisible = true;
+                this.hot = {};
+                
+                $.ajax({
+                    url: "/admin/homepage/",
+                    method: "POST",
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(home_admin.hot)
+                }).then((data) => {
+                    
+                    if (data.code == 200) {
+                        home_admin.getData(home_admin.page);
+                    }
+                }).fail((data) => {
+                    console.log(home_admin.hot);
+                })
+                
+            },
+            handleClose() {
+                this.updateHot(this.hot);
+            },
+            handleSelect(key, keyPath) {
+
+            },
+            pageSizeChange(page) {
+                this.page = page
+                this.getData(page)
+            },
+            getData(page) {
+                $.ajax({
+                    url: "/admin/homepage/" + page,
+                    type: "GET"
+                }).then((data) => {
+                    this.tableData = data.data.byPage
+                    this.count = data.data.count
+                    console.log(data)
+                })
+            },
+            // 更新一条热门数据
+            updateHot(hot) {
+                $.ajax({
+                    url: "/admin/homepage/",
+                    method: "PUT",
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(hot)
+                }).then((data) => {
+                    this.isadd = false;
+                    if (data.code == 200) {
+                        home_admin.getData(home_admin.page);
+                    }
+                }).fail((data) => {
+                    this.isadd = true;
+                })
+            },
+            open(fun) {
+                this.$confirm('此操作将删除该项目, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let bool = fun()
+                    console.log(bool)
+                    if (bool) {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'error',
+                            message: '删除失败!'
+                        });
+                    }
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
+        },
+        created() {
+            this.getData(0)
+        }
+    })
+</script>
+
+{{end}}

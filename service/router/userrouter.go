@@ -9,13 +9,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (myrouter *MyRouter)newUserRouter(router *gin.Engine) {
+func (myrouter *MyRouter) newUserRouter(router *gin.Engine) {
 	userrouter := router.Group("/user")
+	// 注册
 	userrouter.GET("/register", myrouter.RegisterRouter)
+	// 登录
 	userrouter.GET("/login", myrouter.LoginRouter)
+	// 个人中心
 	userrouter.GET("/setting", myrouter.SeetingRouter)
-	userrouter.GET("/personal",usermiddleware.JurMiddleware, myrouter.PersonalRouter)
-	userrouter.GET("/write",usermiddleware.JurMiddleware, myrouter.WriteRouter)
+	// 个人中心
+	userrouter.GET("/personal", usermiddleware.UserLoginJudgeMiddleware, myrouter.PersonalRouter)
+	// 写文章
+	userrouter.GET("/write", usermiddleware.UserLoginJudgeMiddleware, myrouter.WriteRouter)
+	// 后台管理页面
+	userrouter.GET("/adminview", func(context *gin.Context) {
+		// 只有管理员才能访问
+		usermiddleware.JurMiddleware(context, []string{"root"})
+	}, func(context *gin.Context) {
+		context.HTML(http.StatusOK, "admin/home_admin.html", gin.H{
+			"title": "后台管理页面",
+		})
+	})
 }
 
 func (myrouter *MyRouter) RegisterRouter(c *gin.Context) {
@@ -39,7 +53,7 @@ func (myrouter *MyRouter) SeetingRouter(c *gin.Context) {
 func (myrouter *MyRouter) PersonalRouter(c *gin.Context) {
 	value, exists := c.Get("current_user")
 	if !exists {
-		log.Println("解析中间件失败");
+		log.Println("解析中间件失败")
 	}
 	log.Println("这个是当前用户的user", value.(*userdao.User))
 	c.HTML(http.StatusOK, "user/personal.html", gin.H{

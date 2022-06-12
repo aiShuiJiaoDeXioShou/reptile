@@ -103,7 +103,18 @@ func QueryByNowType(typeName string) ([]HotObject, error) {
 	return hots, err
 }
 
-// 将该表所有数据的时间更新为当前时间
+// UpdateTime 将该表所有数据的时间更新为当前时间
 func UpdateTime() error {
-	return dao.DB.Model(&HotObject{}).Update("created_at", time.Now()).Error
+	// 将创建时间小于现在的时间更新为当前时间
+	return dao.DB.Model(&HotObject{}).Where("created_at < ?", time.Now()).Update("created_at", time.Now()).Error
+}
+
+// 指定page拿到该表数据
+func QueryByPage(page int) ([]HotObject, int64, error) {
+	var hots []HotObject
+	err := dao.DB.Limit(10).Offset(page * 10).Find(&hots).Error
+	// 获取总页数
+	var count int64
+	dao.DB.Model(&HotObject{}).Count(&count)
+	return hots, count, err
 }

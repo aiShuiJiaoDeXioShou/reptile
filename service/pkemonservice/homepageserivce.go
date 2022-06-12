@@ -6,6 +6,8 @@ import (
 	"reptile/comm/res"
 	"reptile/dao/hotdao/pkmhot"
 	"reptile/dao/pkminfodao"
+	"reptile/middleware/usermiddleware"
+	"strconv"
 )
 
 var (
@@ -24,24 +26,41 @@ func NewPokemonWikiHomeService(router *gin.Engine) {
 		homepage.GET("/title", ShowHomePageTitle)
 	}
 
-	homepageadmin := router.Group("/admin/homepage")
+	homepageadmin := router.Group("/admin/homepage", usermiddleware.UserLoginJudgeMiddleware)
+	homepageadmin.Use(func(context *gin.Context) {
+		// 只有拥有root的用户才能访问该接口
+		usermiddleware.JurMiddleware(context, []string{"root"})
+	})
 	{
-		homepageadmin.PUT("/", UpdateHomePage)
-		homepageadmin.DELETE("/:id", DeleteHomePage)
-		homepageadmin.POST("/", AddHomePage)
+		homepageadmin.PUT("/", UpdateHotObject)
+		homepageadmin.DELETE("/:id", DeleteHotObject)
+		homepageadmin.POST("/", AddHotObject)
 		// 把所有数据的时间改为今天的时间
-		homepageadmin.GET("/", UpdateTime)
+		homepageadmin.GET("/", UpdateHotObjectTime)
+		// 拿到指定page的数据
+		homepageadmin.GET("/:page", QueryHotObjectByPage)
 	}
 }
 
-func UpdateTime(context *gin.Context) {
-	// 更新时间
-	err := pkmhot.UpdateTime()
+func QueryHotObjectByPage(ctx *gin.Context) {
+	page := ctx.Param("page")
+	// 将page转换为int
+	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		log.Println(err)
-		context.JSON(500, res.Fail("更新时间失败"))
+		ctx.JSON(400, res.Fail("page参数错误"))
 		return
 	}
+	byPage, count, err := pkmhot.QueryByPage(pageInt)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, res.Fail("查询失败"))
+		return
+	}
+	ctx.JSON(200, res.Ok(gin.H{
+		"byPage": byPage,
+		"count":  count,
+	}))
 }
 
 // ShowHomePageTitle 就是那个首页的火热滚动条
@@ -115,18 +134,24 @@ func ShowHomePageLeftData(ctx *gin.Context) {
 	}))
 }
 
-func AddHomePage(context *gin.Context) {
+func AddHotObject(context *gin.Context) {
 	var hot pkmhot.HotObject
-	err := context.BindJSON(&hot)
+	err := context.ShouldBindJSON(&hot)
 	if err != nil {
 		log.Println(err)
 		context.JSON(400, res.Fail("数据绑定失败，请检查数据格式"))
 		return
 	}
 	err = pkmhot.Insert(&hot)
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, res.Fail("添加失败"))
+		return
+	}
+	context.JSON(200, res.Ok("添加成功"))
 }
 
-func DeleteHomePage(context *gin.Context) {
+func DeleteHotObject(context *gin.Context) {
 	id := context.Param("id")
 	err := pkmhot.Delete(id)
 	if err != nil {
@@ -137,7 +162,8 @@ func DeleteHomePage(context *gin.Context) {
 	context.JSON(200, res.Ok("删除成功"))
 }
 
-func UpdateHomePage(context *gin.Context) {
+// UpdateHotObject 更新一条热门数据
+func UpdateHotObject(context *gin.Context) {
 	var hot pkmhot.HotObject
 	err := context.BindJSON(&hot)
 	if err != nil {
@@ -152,4 +178,16 @@ func UpdateHomePage(context *gin.Context) {
 		return
 	}
 	context.JSON(200, res.Ok("更新成功"))
+}
+
+// UpdateHotObjectTime 把所有数据的时间改为今天的时间
+func UpdateHotObjectTime(context *gin.Context) {
+	// 更新时间
+	err := pkmhot.UpdateTime()
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, res.Fail("更新时间失败"))
+		return
+	}
+	context.JSON(200, res.Ok("更新时间成功"))
 }
