@@ -23,6 +23,25 @@ func NewPokemonWikiHomeService(router *gin.Engine) {
 		homepage.GET("/book", ShowHomePageBook)
 		homepage.GET("/title", ShowHomePageTitle)
 	}
+
+	homepageadmin := router.Group("/admin/homepage")
+	{
+		homepageadmin.PUT("/", UpdateHomePage)
+		homepageadmin.DELETE("/:id", DeleteHomePage)
+		homepageadmin.POST("/", AddHomePage)
+		// 把所有数据的时间改为今天的时间
+		homepageadmin.GET("/", UpdateTime)
+	}
+}
+
+func UpdateTime(context *gin.Context) {
+	// 更新时间
+	err := pkmhot.UpdateTime()
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, res.Fail("更新时间失败"))
+		return
+	}
 }
 
 // ShowHomePageTitle 就是那个首页的火热滚动条
@@ -32,6 +51,7 @@ func ShowHomePageTitle(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(500, res.Fail("什么鬼啊今天程序员这么懒吗,没有创造一条数据!!!"))
+		return
 	}
 	ctx.JSON(200, res.Ok(nowType))
 }
@@ -42,6 +62,7 @@ func ShowHomePageBook(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(500, res.Fail("没有找到一本书,你是不是忘记存库了"))
+		return
 	}
 	ctx.JSON(200, res.Ok(byType))
 }
@@ -56,6 +77,7 @@ func ShowHomePageRightData(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(500, res.Fail("没有找到一只宝可梦,你是不是忘记存库了"))
+		return
 	}
 	var pkmIds []uint
 	// 根据关联对象拿到宝可梦id
@@ -84,10 +106,50 @@ func ShowHomePageLeftData(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(500, res.Fail("没有找到周边信息,你是不是忘记存库了"))
+		return
 	}
 	// 没有错误的话,就返回数据
 	ctx.JSON(200, res.Ok(gin.H{
 		"news":   news,
 		"around": around,
 	}))
+}
+
+func AddHomePage(context *gin.Context) {
+	var hot pkmhot.HotObject
+	err := context.BindJSON(&hot)
+	if err != nil {
+		log.Println(err)
+		context.JSON(400, res.Fail("数据绑定失败，请检查数据格式"))
+		return
+	}
+	err = pkmhot.Insert(&hot)
+}
+
+func DeleteHomePage(context *gin.Context) {
+	id := context.Param("id")
+	err := pkmhot.Delete(id)
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, res.Fail("删除失败"))
+		return
+	}
+	context.JSON(200, res.Ok("删除成功"))
+}
+
+func UpdateHomePage(context *gin.Context) {
+	var hot pkmhot.HotObject
+	err := context.BindJSON(&hot)
+	if err != nil {
+		log.Println(err)
+		context.JSON(400, res.Fail("数据绑定失败，请检查数据格式"))
+		return
+	}
+	err = pkmhot.Update(&hot)
+	if err != nil {
+		log.Println(err)
+		context.JSON(500, res.Fail("更新失败"))
+		return
+	}
+	context.JSON(200, res.Ok("更新成功"))
 }

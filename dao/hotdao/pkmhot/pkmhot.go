@@ -68,9 +68,9 @@ func Insert(hot *HotObject) error {
 	return dao.DB.Create(hot).Error
 }
 
-// Delete 删除一条热门数据，这个是逻辑删除哦
-func Delete(hot *HotObject) error {
-	return dao.DB.Delete(hot).Error
+// Delete 根据id 删除一条热门数据，这个是逻辑删除哦
+func Delete(id string) error {
+	return dao.DB.Where("id = ?", id).Delete(&HotObject{}).Error
 }
 
 // Update 更新一条热门数据
@@ -101,4 +101,9 @@ func QueryByNowType(typeName string) ([]HotObject, error) {
 		}
 	}
 	return hots, err
+}
+
+// 将该表所有数据的时间更新为当前时间
+func UpdateTime() error {
+	return dao.DB.Model(&HotObject{}).Update("created_at", time.Now()).Error
 }

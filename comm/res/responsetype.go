@@ -57,3 +57,13 @@ func Unauthorized(msg string) ResponseType {
 		Time:    time.Now(),
 	}
 }
+
+// 格式错误
+func FormatError(msg string) ResponseType {
+	return ResponseType{
+		Code:    400,
+		Message: msg,
+		Data:    nil,
+		Time:    time.Now(),
+	}
+}
