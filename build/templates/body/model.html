@@ -10,7 +10,9 @@
     <el-row id="app_model_vue" class="model-1">
         <el-col :span="12">
             <div class="model-dynamic">
+
                 <div class="model-dynamic-title"><i style="color: #f759ab;">快报:</i> 智蛙终将闪电归来,以雷霆之势虐杀全场</div>
+
                 <el-carousel height="50%">
                     <el-carousel-item v-for="(item,index) in image" :key="index">
                         <a href="#">
@@ -18,30 +20,39 @@
                         </a>
                     </el-carousel-item>
                 </el-carousel>
+
                 <div class="model-dynamic-content">
+
                     <div class="info">
+
                         <h2><i class="el-icon-info"></i> 近日咨询</h2>
-                        <div v-for="(item, index) in 10" :key="index">
+                        <div v-for="(item, index) in news" :key="index" style="text-align: left;">
                             <a href="#" class="link">
                                 <i class="bi bi-newspaper" style="color: #efdbff;"></i>
-                                <span class="span-text" style="color: #efdbff;">小编已死无法再编</span>
+                                <span class="span-text" style="color: #efdbff;" v-text="item.title">
+
+                                </span>
                             </a>
                         </div>
 
                     </div>
+
                     <div class="periphery">
+
                         <h2><i class="el-icon-help"></i> 周边信息</h2>
                         <ul>
-                            <li class="block" v-for="(item, index) in 12" :key="index">
+                            <li class="block" v-for="(item, index) in around" :key="index">
                                 <!-- 这个用于显示图片 -->
                                 <div class="consult-image"></div>
                                 <p>
-                                    原来你也玩 Pokemon! <br>
-                                    在那传说之上,就是宝可梦大师的所在地,所以这个网站叫做传说之上,正是为了记念那位传奇的宝可梦大师!
+                                    <span v-text="item.title"></span> <br>
+                                    <span v-text="item.description"></span>
                                 </p>
                             </li>
                         </ul>
+
                     </div>
+
                 </div>
 
             </div>
@@ -50,7 +61,7 @@
         <el-col :span="12">
             <div class="model-recommend">
                 <!-- 宝可梦标题 -->
-                <div class="pkm-title">本期主角--"喷火龙"</div>
+                <div class="pkm-title" v-text="'本期的主角--'+pkmnowType.title"></div>
 
                 <!-- 这个是介绍宝可梦实际内容的地方 -->
                 <div class="bkm-bg-content">
@@ -60,8 +71,14 @@
 
                         <!-- 这个盒子用于存放宝可梦的肖像 -->
                         <div class="bkm-image-box">
-                            <img class="bkm-image" src="/static/img/favicon.ico" alt="小火龙"><br><br>
-                            <el-button type="danger">查看图鉴全部信息</el-button>
+                            <el-image style=" 
+                            width: 250px;
+                            height: auto;
+                            display: block;
+                            border-radius: 8px;"
+                                :src="'https://tse1-mm.cn.bing.net/th/id/R-C.72751a7a285056d530cb5c44d68cc263?rik=r%2bTxSmIRPeVpIw&riu=http%3a%2f%2fi7.qhimg.com%2ft011c404bea16806c71.png&ehk=QaCvedNSSp9C0REdLBLxQsQ3qk%2bJAxWnYLyWewZ%2fr5s%3d&risl=&pid=ImgRaw&r=0'"
+                                :alt="showpkom.name"><br><br>
+                                <el-button type="danger">查看图鉴全部信息</el-button>
                         </div>
 
                         <!-- 这里放它的图表信息,我们看见的肯定是蜘蛛图 -->
@@ -70,12 +87,17 @@
                         <!-- 下面这个是它的详细图表信息 -->
                         <div class="bkm-chart-info">
                             <h2>种族值</h2>
-                            攻击力:<el-progress class="pkm-progress-bar" :percentage="50"></el-progress>
-                            防御力:<el-progress class="pkm-progress-bar" :percentage="100">
-                                特攻:</el-progress>
-                            物攻:<el-progress class="pkm-progress-bar" :percentage="100" status="success"></el-progress>
-                            特防:<el-progress class="pkm-progress-bar" :percentage="100" status="warning"></el-progress>
-                            速度:<el-progress class="pkm-progress-bar" :percentage="50" status="exception"></el-progress>
+                            攻击力:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack"></el-progress>
+                            防御力:<el-progress class="pkm-progress-bar" :percentage="showpkom.defense">
+                            </el-progress>
+                            特攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_attack">
+                            </el-progress>
+                            物攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack" status="success">
+                            </el-progress>
+                            特防:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_defense" status="warning">
+                            </el-progress>
+                            速度:<el-progress class="pkm-progress-bar" :percentage="showpkom.speed" status="exception">
+                            </el-progress>
                         </div>
 
                     </div>
@@ -86,15 +108,15 @@
                         <div class="attribute">
                             <div>
                                 <h2>属性</h2>
-                                <div class="attribute-into">火属性,飞行属性</div>
+                                <div class="attribute-into" v-text="showpkom.property"></div>
                             </div>
                             <div>
                                 <h2>分类</h2>
-                                <div class="attribute-into">种子宝可梦</div>
+                                <div class="attribute-into" v-text="showpkom.category"></div>
                             </div>
                             <div>
                                 <h2>特性</h2>
-                                <div class="attribute-into">猛火,飞龙在天</div>
+                                <div class="attribute-into" v-text="showpkom.ability"></div>
                             </div>
                         </div>
 
@@ -102,19 +124,25 @@
                         <div class="attribute-detailed">
                             <div>
                                 <h2>身高</h2>
-                                <div class="attribute-into">0.6m</div>
+                                <div class="attribute-into" v-text="showpkom.height"></div>
                             </div>
                             <div>
                                 <h2>体重</h2>
-                                <div class="attribute-into">6.9kg</div>
+                                <div class="attribute-into" v-text="showpkom.weight"></div>
                             </div>
                             <div>
                                 <h2>体型</h2>
-                                <div class="attribute-into">火龙</div>
+                                <div class="attribute-into">
+                                    <img :src="showpkom.body==''?'//media.52poke.com/wiki/thumb/c/cc/Body08.png/32px-Body08.png':showpkom.body"
+                                        alt="">
+                                </div>
                             </div>
                             <div>
                                 <h2>脚印</h2>
-                                <div class="attribute-into">大脚</div>
+                                <div class="attribute-into">
+                                    <img :src="showpkom.foot==''?'//media.52poke.com/wiki/2/22/F004.png':showpkom.foot"
+                                        alt="">
+                                </div>
                             </div>
                             <div>
                                 <h2>性别变化</h2>
@@ -134,7 +162,7 @@
 
                 </div>
 
-                <p class="introduce">
+                <p class="introduce" v-text="pkmnowType.description">
                     传说能进化成最强大的怪兽,宝可梦之王,因为导演的喜爱
                     往往又被称为"增火龙",强大的喷火龙在古代亦是最强大的战争兵器,他在天空中发出
                     炽热的火焰,给予敌人致命一击
@@ -171,6 +199,8 @@
 
 <!-- 引入图表库 -->
 <script src="/static/js/chart.js"></script>
+<!-- <script src="/static/js/axios.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
     const modelapp = new Vue({
@@ -179,16 +209,71 @@
             return {
                 msg: 'Hello Vue!',
                 sex: 0,
-                image:[
+                image: [
                     "/static/img/bkm1.jpg",
                     "/static/img/bkm2.jpg",
                     "/static/img/bkm3.jpg",
                     "/static/img/bkm4.jpg",
-                ]
+                ],
+                news: [],
+                around: [],
+                pokemons: [],
+                pkmnowType: {},
+                showpkom: {},
             }
         },
         methods: {
+            chart() {
+                var dom = document.getElementById('container');
+                var myChart = echarts.init(dom, 'light', {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+                var app = {};
 
+                var option;
+
+                option = {
+                    radar: {
+                        // shape: 'circle',
+                        indicator: [{
+                                name: '攻击力',
+                                max: 200
+                            },
+                            {
+                                name: '防御力',
+                                max: 200
+                            },
+                            {
+                                name: '特攻',
+                                max: 200
+                            },
+                            {
+                                name: '特防',
+                                max: 200
+                            },
+                            {
+                                name: '速度',
+                                max: 200
+                            },
+                        ]
+                    },
+                    series: [{
+                        name: 'Budget vs spending',
+                        type: 'radar',
+                        data: [{
+                            value: [this.showpkom.attack, this.showpkom.defense, this.showpkom.sp_attack, this.showpkom.sp_defense, this.showpkom.speed],
+                            name: 'Allocated Budget'
+                        }]
+                    }]
+                };
+
+                if (option && typeof option === 'object') {
+                    myChart.setOption(option);
+                }
+
+                window.addEventListener('resize', myChart.resize);
+            }
         },
         created() {
             // 弹出一个消息框
@@ -196,243 +281,81 @@
                 message: '欢迎来到这个社区,很高兴认识你,为我们新的伙伴而感到开心',
                 type: 'success'
             });
+
+            // 获取各个模块页面的数据
+            // 获取左模块数据
+            axios({
+                method: 'get',
+                url: '/homepage/left_data',
+            }).then((result) => {
+                if (result.data.code == 200) {
+                    this.news = result.data.data.news;
+                    this.around = result.data.data.around;
+                }
+            }).catch((err) => {
+                this.$message({
+                    message: '获取左模块数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取右模块数据
+            axios({
+                method: 'get',
+                url: '/homepage/right_data',
+            }).then((result) => {
+                if (result.data.code == 200) {
+                    this.pokemons = result.data.data.pkms;
+                    this.pkmnowType = result.data.data.now_pkm[0];
+                    this.showpkom = this.pokemons[0];
+                    this.chart();
+                }
+            }).catch((err) => {
+                this.$message({
+                    message: '获取右模块数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取music数据
+            axios({
+                method: 'get',
+                url: '/homepage/music',
+            }).then((result) => {
+                console.log(result)
+            }).catch((err) => {
+                this.$message({
+                    message: '获取music数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取book数据
+            axios({
+                method: 'get',
+                url: '/homepage/book',
+            }).then((result) => {
+                console.log(result)
+            }).catch((err) => {
+                this.$message({
+                    message: '获取book数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取title轮播条数据
+            axios({
+                method: 'get',
+                url: '/homepage/title',
+            }).then((result) => {
+                console.log(result)
+            }).catch((err) => {
+                this.$message({
+                    message: '获取title数据失败',
+                    type: 'error'
+                });
+            });
         }
     })
-</script>
-
-<!-- 下面是图表库的代码 -->
-<script>
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, null, {
-        renderer: 'canvas',
-        useDirtyRect: false
-    });
-    var app = {};
-
-    var option;
-
-    // Schema:
-    // date,AQIindex,PM2.5,PM10,CO,NO2,SO2
-    const dataBJ = [
-        [55, 9, 56, 0.46, 18, 6, 1],
-        [25, 11, 21, 0.65, 34, 9, 2],
-        [56, 7, 63, 0.3, 14, 5, 3],
-        [33, 7, 29, 0.33, 16, 6, 4],
-        [42, 24, 44, 0.76, 40, 16, 5],
-        [82, 58, 90, 1.77, 68, 33, 6],
-        [74, 49, 77, 1.46, 48, 27, 7],
-        [78, 55, 80, 1.29, 59, 29, 8],
-        [267, 216, 280, 4.8, 108, 64, 9],
-        [185, 127, 216, 2.52, 61, 27, 10],
-        [39, 19, 38, 0.57, 31, 15, 11],
-        [41, 11, 40, 0.43, 21, 7, 12],
-        [64, 38, 74, 1.04, 46, 22, 13],
-        [108, 79, 120, 1.7, 75, 41, 14],
-        [108, 63, 116, 1.48, 44, 26, 15],
-        [33, 6, 29, 0.34, 13, 5, 16],
-        [94, 66, 110, 1.54, 62, 31, 17],
-        [186, 142, 192, 3.88, 93, 79, 18],
-        [57, 31, 54, 0.96, 32, 14, 19],
-        [22, 8, 17, 0.48, 23, 10, 20],
-        [39, 15, 36, 0.61, 29, 13, 21],
-        [94, 69, 114, 2.08, 73, 39, 22],
-        [99, 73, 110, 2.43, 76, 48, 23],
-        [31, 12, 30, 0.5, 32, 16, 24],
-        [42, 27, 43, 1, 53, 22, 25],
-        [154, 117, 157, 3.05, 92, 58, 26],
-        [234, 185, 230, 4.09, 123, 69, 27],
-        [160, 120, 186, 2.77, 91, 50, 28],
-        [134, 96, 165, 2.76, 83, 41, 29],
-        [52, 24, 60, 1.03, 50, 21, 30],
-        [46, 5, 49, 0.28, 10, 6, 31]
-    ];
-    const dataGZ = [
-        [26, 37, 27, 1.163, 27, 13, 1],
-        [85, 62, 71, 1.195, 60, 8, 2],
-        [78, 38, 74, 1.363, 37, 7, 3],
-        [21, 21, 36, 0.634, 40, 9, 4],
-        [41, 42, 46, 0.915, 81, 13, 5],
-        [56, 52, 69, 1.067, 92, 16, 6],
-        [64, 30, 28, 0.924, 51, 2, 7],
-        [55, 48, 74, 1.236, 75, 26, 8],
-        [76, 85, 113, 1.237, 114, 27, 9],
-        [91, 81, 104, 1.041, 56, 40, 10],
-        [84, 39, 60, 0.964, 25, 11, 11],
-        [64, 51, 101, 0.862, 58, 23, 12],
-        [70, 69, 120, 1.198, 65, 36, 13],
-        [77, 105, 178, 2.549, 64, 16, 14],
-        [109, 68, 87, 0.996, 74, 29, 15],
-        [73, 68, 97, 0.905, 51, 34, 16],
-        [54, 27, 47, 0.592, 53, 12, 17],
-        [51, 61, 97, 0.811, 65, 19, 18],
-        [91, 71, 121, 1.374, 43, 18, 19],
-        [73, 102, 182, 2.787, 44, 19, 20],
-        [73, 50, 76, 0.717, 31, 20, 21],
-        [84, 94, 140, 2.238, 68, 18, 22],
-        [93, 77, 104, 1.165, 53, 7, 23],
-        [99, 130, 227, 3.97, 55, 15, 24],
-        [146, 84, 139, 1.094, 40, 17, 25],
-        [113, 108, 137, 1.481, 48, 15, 26],
-        [81, 48, 62, 1.619, 26, 3, 27],
-        [56, 48, 68, 1.336, 37, 9, 28],
-        [82, 92, 174, 3.29, 0, 13, 29],
-        [106, 116, 188, 3.628, 101, 16, 30],
-        [118, 50, 0, 1.383, 76, 11, 31]
-    ];
-    const dataSH = [
-        [91, 45, 125, 0.82, 34, 23, 1],
-        [65, 27, 78, 0.86, 45, 29, 2],
-        [83, 60, 84, 1.09, 73, 27, 3],
-        [109, 81, 121, 1.28, 68, 51, 4],
-        [106, 77, 114, 1.07, 55, 51, 5],
-        [109, 81, 121, 1.28, 68, 51, 6],
-        [106, 77, 114, 1.07, 55, 51, 7],
-        [89, 65, 78, 0.86, 51, 26, 8],
-        [53, 33, 47, 0.64, 50, 17, 9],
-        [80, 55, 80, 1.01, 75, 24, 10],
-        [117, 81, 124, 1.03, 45, 24, 11],
-        [99, 71, 142, 1.1, 62, 42, 12],
-        [95, 69, 130, 1.28, 74, 50, 13],
-        [116, 87, 131, 1.47, 84, 40, 14],
-        [108, 80, 121, 1.3, 85, 37, 15],
-        [134, 83, 167, 1.16, 57, 43, 16],
-        [79, 43, 107, 1.05, 59, 37, 17],
-        [71, 46, 89, 0.86, 64, 25, 18],
-        [97, 71, 113, 1.17, 88, 31, 19],
-        [84, 57, 91, 0.85, 55, 31, 20],
-        [87, 63, 101, 0.9, 56, 41, 21],
-        [104, 77, 119, 1.09, 73, 48, 22],
-        [87, 62, 100, 1, 72, 28, 23],
-        [168, 128, 172, 1.49, 97, 56, 24],
-        [65, 45, 51, 0.74, 39, 17, 25],
-        [39, 24, 38, 0.61, 47, 17, 26],
-        [39, 24, 39, 0.59, 50, 19, 27],
-        [93, 68, 96, 1.05, 79, 29, 28],
-        [188, 143, 197, 1.66, 99, 51, 29],
-        [174, 131, 174, 1.55, 108, 50, 30],
-        [187, 143, 201, 1.39, 89, 53, 31]
-    ];
-    const lineStyle = {
-        width: 1,
-        opacity: 0.5
-    };
-    option = {
-        backgroundColor: '#595959',
-        title: {
-            text: 'AQI - Radar',
-            left: 'center',
-            textStyle: {
-                color: '#eee'
-            }
-        },
-        legend: {
-            bottom: 5,
-            data: ['Beijing', 'Shanghai', 'Guangzhou'],
-            itemGap: 20,
-            textStyle: {
-                color: '#fff',
-                fontSize: 14
-            },
-            selectedMode: 'single'
-        },
-        radar: {
-            indicator: [{
-                    name: 'AQI',
-                    max: 300
-                },
-                {
-                    name: 'PM2.5',
-                    max: 250
-                },
-                {
-                    name: 'PM10',
-                    max: 300
-                },
-                {
-                    name: 'CO',
-                    max: 5
-                },
-                {
-                    name: 'NO2',
-                    max: 200
-                },
-                {
-                    name: 'SO2',
-                    max: 100
-                }
-            ],
-            shape: 'circle',
-            splitNumber: 5,
-            axisName: {
-                color: 'rgb(238, 197, 102)'
-            },
-            splitLine: {
-                lineStyle: {
-                    color: [
-                        'rgba(238, 197, 102, 0.1)',
-                        'rgba(238, 197, 102, 0.2)',
-                        'rgba(238, 197, 102, 0.4)',
-                        'rgba(238, 197, 102, 0.6)',
-                        'rgba(238, 197, 102, 0.8)',
-                        'rgba(238, 197, 102, 1)'
-                    ].reverse()
-                }
-            },
-            splitArea: {
-                show: false
-            },
-            axisLine: {
-                lineStyle: {
-                    color: 'rgba(238, 197, 102, 0.5)'
-                }
-            }
-        },
-        series: [{
-                name: 'Beijing',
-                type: 'radar',
-                lineStyle: lineStyle,
-                data: dataBJ,
-                symbol: 'none',
-                itemStyle: {
-                    color: '#F9713C'
-                },
-                areaStyle: {
-                    opacity: 0.1
-                }
-            },
-            {
-                name: 'Shanghai',
-                type: 'radar',
-                lineStyle: lineStyle,
-                data: dataSH,
-                symbol: 'none',
-                itemStyle: {
-                    color: '#B3E4A1'
-                },
-                areaStyle: {
-                    opacity: 0.05
-                }
-            },
-            {
-                name: 'Guangzhou',
-                type: 'radar',
-                lineStyle: lineStyle,
-                data: dataGZ,
-                symbol: 'none',
-                itemStyle: {
-                    color: 'rgb(238, 197, 102)'
-                },
-                areaStyle: {
-                    opacity: 0.05
-                }
-            }
-        ]
-    };
-
-    if (option && typeof option === 'object') {
-        myChart.setOption(option);
-    }
-
-    window.addEventListener('resize', myChart.resize);
 </script>
 {{end}}

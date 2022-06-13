@@ -31,6 +31,9 @@
             <el-form-item size="large">
                 <el-button type="primary" @click="onSubmit">保存</el-button>
               </el-form-item>
+              <el-form-item size="large">
+                <el-button type="primary" @click="exit">退出登入</el-button>
+              </el-form-item>
         </el-form>
     </div>
 </div>
@@ -86,6 +89,21 @@
                         message: "修改失败",
                         type: "error",
                     })
+                })
+            },
+            exit(){
+                localStorage.removeItem("token")
+                ax({
+                    url: "/user/logout",
+                    method: "get",
+                }).then(res=>{
+                    if(res.code == 200){
+                        this.$message({
+                            message: "退出成功",
+                            type: "success",
+                        })
+                        location.href = "/"
+                    }
                 })
             }
         },
