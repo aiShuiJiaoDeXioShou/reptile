@@ -38,6 +38,9 @@ func UserSerice(router *gin.Engine) {
 			usermiddleware.RoleMiddleware(context, []string{"admin"})
 			context.JSON(200, res.Ok("该用户拥有管理员权限"))
 		})
+
+		// 退出登入UserSerice
+		r.GET("/logout", userLogout)
 	}
 
 }

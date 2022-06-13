@@ -10,7 +10,9 @@
     <el-row id="app_model_vue" class="model-1">
         <el-col :span="12">
             <div class="model-dynamic">
+
                 <div class="model-dynamic-title"><i style="color: #f759ab;">快报:</i> 智蛙终将闪电归来,以雷霆之势虐杀全场</div>
+
                 <el-carousel height="50%">
                     <el-carousel-item v-for="(item,index) in image" :key="index">
                         <a href="#">
@@ -18,8 +20,11 @@
                         </a>
                     </el-carousel-item>
                 </el-carousel>
+
                 <div class="model-dynamic-content">
+
                     <div class="info">
+
                         <h2><i class="el-icon-info"></i> 近日咨询</h2>
                         <div v-for="(item, index) in 10" :key="index">
                             <a href="#" class="link">
@@ -29,7 +34,9 @@
                         </div>
 
                     </div>
+
                     <div class="periphery">
+
                         <h2><i class="el-icon-help"></i> 周边信息</h2>
                         <ul>
                             <li class="block" v-for="(item, index) in 12" :key="index">
@@ -41,7 +48,9 @@
                                 </p>
                             </li>
                         </ul>
+
                     </div>
+
                 </div>
 
             </div>
@@ -171,6 +180,8 @@
 
 <!-- 引入图表库 -->
 <script src="/static/js/chart.js"></script>
+<!-- <script src="/static/js/axios.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
     const modelapp = new Vue({
@@ -179,7 +190,7 @@
             return {
                 msg: 'Hello Vue!',
                 sex: 0,
-                image:[
+                image: [
                     "/static/img/bkm1.jpg",
                     "/static/img/bkm2.jpg",
                     "/static/img/bkm3.jpg",
@@ -195,6 +206,71 @@
             this.$message({
                 message: '欢迎来到这个社区,很高兴认识你,为我们新的伙伴而感到开心',
                 type: 'success'
+            });
+
+            // 获取各个模块页面的数据
+            axios({
+                method: 'get',
+                url: '/homepage/left_data',
+            }).then((result) => {
+               console.log(result) 
+            }).catch((err) => {
+                this.$message({
+                    message: '获取左模块数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取右模块数据
+            axios({
+                method: 'get',
+                url: '/homepage/right_data',
+            }).then((result) => {
+                console.log(result) 
+            }).catch((err) => {
+                this.$message({
+                    message: '获取右模块数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取music数据
+            axios({
+                method: 'get',
+                url: '/homepage/music',
+            }).then((result) => {
+                console.log(result) 
+            }).catch((err) => {
+                this.$message({
+                    message: '获取music数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取book数据
+            axios({
+                method: 'get',
+                url: '/homepage/book',
+            }).then((result) => {
+                console.log(result) 
+            }).catch((err) => {
+                this.$message({
+                    message: '获取book数据失败',
+                    type: 'error'
+                });
+            });
+
+            // 获取title轮播条数据
+            axios({
+                method: 'get',
+                url: '/homepage/title',
+            }).then((result) => {
+                console.log(result) 
+            }).catch((err) => {
+                this.$message({
+                    message: '获取title数据失败',
+                    type: 'error'
+                });
             });
         }
     })

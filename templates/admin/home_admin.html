@@ -51,8 +51,7 @@
 
         </el-table>
 
-        <el-pagination background @current-change="pageSizeChange" layout="prev, pager, next" :total="count">
-        </el-pagination>
+        <el-pagination background @current-change="pageSizeChange" layout="prev, pager, next" :total="count"></el-pagination>
 
         <el-dialog title="提示" :visible.sync="updateDialogVisible" width="30%" @close="handleClose">
             <span>这是一段信息</span>
@@ -114,7 +113,6 @@
                     type: '',
                     image_url: '',
                     description: '',
-                    isadd: false,
                 },
                 isadd: false,
                 flush: 'el-icon-refresh-left'
@@ -157,41 +155,42 @@
             add() {
                 this.updateDialogVisible = true;
                 this.hot = {};
-                
-                $.ajax({
-                    url: "/admin/homepage/",
-                    method: "POST",
-                    contentType: "application/json",
-                    dataType: 'json',
-                    data: JSON.stringify(home_admin.hot)
-                }).then((data) => {
-                    
-                    if (data.code == 200) {
-                        home_admin.getData(home_admin.page);
-                    }
-                }).fail((data) => {
-                    console.log(home_admin.hot);
-                })
-                
             },
             handleClose() {
-                this.updateHot(this.hot);
+                if (!this.isadd) {
+                    $.ajax({
+                        url: "/admin/homepage/",
+                        method: "POST",
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify(home_admin.hot)
+                    }).then((data) => {
+
+                        if (data.code == 200) {
+                            home_admin.getData(home_admin.page);
+                        }
+                    }).fail((data) => {
+                        console.log(home_admin.hot);
+                    })
+                } else {
+                    this.updateHot(this.hot);
+                }
             },
             handleSelect(key, keyPath) {
 
             },
             pageSizeChange(page) {
-                this.page = page
+                console.log(page);
+                this.page = page - 1
                 this.getData(page)
             },
             getData(page) {
                 $.ajax({
-                    url: "/admin/homepage/" + page,
+                    url: "/admin/homepage/" + this.page,
                     type: "GET"
                 }).then((data) => {
                     this.tableData = data.data.byPage
                     this.count = data.data.count
-                    console.log(data)
                 })
             },
             // 更新一条热门数据

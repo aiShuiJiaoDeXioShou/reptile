@@ -1,6 +1,8 @@
 package articleservice
 
 import (
+	"reptile/comm"
+	"reptile/comm/res"
 	"reptile/dao/pkminfodao"
 	"reptile/dao/userdao"
 	"reptile/middleware/usermiddleware"
@@ -21,14 +23,60 @@ func init() {
 func StartArticleService(router *gin.Engine) {
 	rg := router.Group("/article", usermiddleware.UserLoginJudgeMiddleware)
 
-	// 添加一个文章
-	rg.POST("/", AddArticle)
+	{
+		// 添加一个文章
+		rg.POST("/", AddArticle)
 
-	// 删除一个文章
-	rg.DELETE("/:id", DeleteArticle)
+		// 删除一个文章
+		rg.DELETE("/:id", DeleteArticle)
 
-	// 修改该文章
-	rg.PUT("/:id", UpdateArticle)
+		// 修改该文章
+		rg.PUT("/:id", UpdateArticle)
+
+		// 文章点赞
+		rg.POST("/like/:id/:type", LikeArticle)
+
+		// 文章收藏
+		rg.POST("collect/:id/:type", LikeArticle)
+	}
+
+}
+
+func LikeArticle(ctx *gin.Context) {
+	// 获取当前空间的用户LikeArticle
+	value, exists := ctx.Get("current_user")
+	if !exists {
+		ctx.JSON(500, gin.H{
+			"code": 0,
+			"msg":  "点赞失败,你还未登录,没有点赞的权限!",
+		})
+		return
+	}
+	user := value.(*userdao.User)
+
+	// 获取文章id
+	id := ctx.Param("id")
+	// 将stringid强转为uid类型
+	u, err := comm.ParseUint(id)
+	if err != nil {
+		ctx.JSON(500, res.FormatError("点赞失败,格式错误!"))
+		return
+	}
+
+	// 获取该条消息是什么类型
+	typestr := ctx.Param("type")
+	// 强转为int类型
+	typeint, err := strconv.Atoi(typestr)
+	if err != nil {
+		ctx.JSON(500, res.FormatError("点赞失败,格式错误!"))
+	}
+	
+	// 调用dao层的方法
+	err = am.AddLike(&pkminfodao.ArticleLike{
+		UserId: user.ID,
+		Type:  typeint,
+		ArticleId: u,
+	})
 }
 
 func AddArticle(ctx *gin.Context) {

@@ -135,3 +135,15 @@ func (am *ArticleManager) IsCommentByRelationCommentId(relationCommentId uint) (
 	}
 	return
 }
+
+// 添加一条点赞
+func (am *ArticleManager) AddLike(like *ArticleLike) (err error) {
+	err = am.Dao.Create(like).Error
+	return
+}
+
+// 添加一条收藏
+func (am *ArticleManager) AddCollect(collect *ArticleLike) (err error) {
+	err = am.Dao.Create(collect).Error
+	return
+}
