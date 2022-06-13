@@ -1,28 +1,30 @@
 package reptilewrite
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func ReptileWrite(url string) error {
+func ReptileWrite(url, filename string) error {
 	log.Println("start image")
 
-	get, err := http.Get(url)
+	// 获取图片转化为图片链接形式
+	image, err := http.Get(url)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	imageData, errRead := ioutil.ReadAll(get.Body)
+	imageData, errRead := ioutil.ReadAll(image.Body)
 	if errRead != nil {
 		log.Println(errRead)
 		return errRead
 	}
 
 	// 如果文件不存在就创造该文件
-	err = ioutil.WriteFile("../static/img/test.png", imageData, 0666)
+	err = ioutil.WriteFile(fmt.Sprintf("D:/有天道/img/%s.png", filename), imageData, 0666)
 	if err != nil {
 		log.Println(err)
 		return err

@@ -1,0 +1,165 @@
+{{define "vip/index.html"}}
+	<head>
+		<style type="text/css">
+			* {
+				padding: 0;
+				margin: 0;
+			}
+
+			.month {
+				width: 100px;
+				height: 100px;
+				border: 1px solid pink;
+				border-radius: 15%;
+				float: left;
+				text-align: center;
+			}
+
+			.year {
+				width: 100px;
+				height: 100px;
+				border: 1px solid pink;
+				border-radius: 15%;
+				float: left;
+				margin-left: 10px;
+			}
+
+			.season {
+				width: 100px;
+				height: 100px;
+				border: 1px solid pink;
+				border-radius: 15%;
+				float: left;
+				margin-left: 10px;
+			}
+
+			.nine {
+				margin-left: 16px;
+			}
+
+			.zero {
+				margin-top: 30px;
+			}
+
+			.select {
+				float: left;
+				margin: 10px;
+				font-size: 14px;
+			}
+
+			.vip {
+				width: 100px;
+				height: 40px;
+				border: 1px none pink;
+			}
+
+			.vouchers {
+				float: left;
+				width: 350px;
+				height: 25px;
+				border: 1px solid goldenrod;
+				margin-top: 8px;
+			}
+
+			.vouchers div {
+				float: left;
+				margin-left: 10px;
+			}
+
+			.yan {
+				width: 1px;
+				height: 18px;
+				margin-top: 3px;
+				border: 0.1px solid #DAA520;
+			}
+
+			.youhui {}
+
+			.ten {
+				color: #FF0000;
+			}
+
+			.money {
+				width: 500px;
+				height: 200px;
+				border: 1px solid blue;
+				margin-top: 100px;
+			}
+
+			.pay {
+				width: 200px;
+				height: 30px;
+				margin-top: 10px;
+				margin-left: 150px;
+			}
+
+			.pay div {
+				margin-top: 20px;
+				float: left;
+			}
+
+			.zhi b {
+				font-size: 18px;
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div style=" width: 520px; height: 520px; margin: 0 auto;">
+			<div style="width: 500px;height: 60px; margin-top: 20px; background-color: goldenrod;">
+				<div style="width: 50px; height: 50px;border: 1px solid pink; background-color: blue;border-radius: 50%; float: left;"></div>
+				<div style=" width: 200px; height: 60px; margin-left: 60px;">
+					<div >明天又是一个晴天</div>
+					<div style="margin-top: 6px;">盐选会员已过期</div>
+				</div>
+			</div>
+			<!-- 会员价格 -->
+			<div style="width: 340px;margin-left: 20px;margin-top: 20px;">
+				<!-- 连续包月 -->
+				<div class="month">
+					<div style="margin-top: 14px; font-size: 14px;">连续包月</div>
+					<div style="font-size: 18px;">￥19</div>
+					<div style="font-size: 12px;color: goldenrod;">￥25</div>
+				</div>
+				<!-- 连续包年 -->
+				<div class="year">
+					<div class="nine" style="margin-top: 14px; font-size: 14px;">连续包年</div>
+					<div class="nine" style="font-size: 18px;">￥198</div>
+					<div class="nine" style="font-size: 12px; color: goldenrod;">￥16.6/月</div>
+				</div>
+				<!-- 连续包季 -->
+				<div class="season">
+					<div class="nine" style="margin-top: 14px; font-size: 14px;">连续包季</div>
+					<div class="nine" style="font-size: 18px;">￥53</div>
+					<div class="nine" style="font-size: 12px;color: goldenrod;">￥17.7/月</div>
+				</div>
+				<!-- 小字 -->
+				<div style="margin-top: 10px;">次月￥19续费,可随时取消</div>
+			</div>
+			<div class="zero">
+				<div class="select vip">选择优惠券:</div>
+				<div class="vouchers">
+					<div class="">盐选会员代金券￥10</div>
+					<div class="yan"></div>
+					<div class="ten"><b>优惠仅剩</b></div>
+					<div class="ten youhui">00 :59 :48</div>
+				</div>
+			</div>
+			<div class="money">
+				<div style="margin-top: 40px;">
+					<div style="width:100px; height: 100px; border: 1px solid #FFC0CB;background-color: #FFC0CB; float: left; margin-left: 30px;"></div><!-- 二维码 -->
+					<div class="pay">
+						<div style="font-size: 14px;">支付金额:</div>
+						<div class="zhi"><b style="color: red;">￥9</b></div>
+						<div style="font-size: 12px; margin-top: 25px;">￥19</div>
+						<br>
+						<div style="float: left;">
+							使用支付宝或微信扫码支付
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	{{end}}

@@ -6,19 +6,39 @@
     <title>显示文章数据</title>
 </head>
 
+
+
+<link rel="stylesheet" href="/static/css/bulma.css">
 {{template "head"}}
 
-<div>
+<div class="root-archive">
     <!--文章头部信息：标题，作者，最后更新日期，导航-->
-    {{ .title }}
-    <h2 style="margin: auto 0">{{ .article.Title }}</h2>
-    作者：<span>{{.article.Author}}</span>
-    <!--文章主体内容-->
-    <div id="doc-content">
-        <textarea placeholder="markdown">
-{{.article.Content}}
-        </textarea>
+    <div>
+
+        <h2 style="margin: auto 0">{{ .article.Title }}</h2>
+
+        作者：<span>{{.article.Author}}</span>
+        最后更新日期：<span>{{.article.UpdatedAt}}</span>
+
     </div>
+
+    <div class="nav-bar">
+
+        <a class="tag is-link is-light" href="/combat/article/{{.article.ID}}">首页</a>
+        <a class="tag is-info is-light" href="/combat/article/{{.article.ID}}/edit">编辑</a>
+        <a class="tag is-danger is-light" href="/combat/article/{{.article.ID}}/delete">删除</a>
+
+    </div>
+
+<!--文章主体内容-->
+<div id="doc-content">
+
+    <textarea placeholder="markdown">
+{{.article.Content}}
+    </textarea>
+
+</div>
+
 </div>
 <script src="/static/js/editor.md-master/editormd.js"></script>
 <script src="/static/js/editor.md-master/lib/marked.min.js"></script>
@@ -43,4 +63,22 @@
         });
     });
 </script>
+
+<style>
+    .root-archive {
+        width: 65%;
+        margin: 100px auto;
+        border-radius: 13px;
+        background: #e0e0e0;
+        box-shadow:  20px 20px 60px #bebebe,
+        -20px -20px 60px #ffffff;
+    }
+
+    .nav-bar {
+
+    }
+    #tophead{
+        height: 80px;
+    }
+</style>
 {{end}}

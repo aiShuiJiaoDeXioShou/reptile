@@ -15,7 +15,7 @@
 
                 <el-carousel height="50%">
                     <el-carousel-item v-for="(item,index) in image" :key="index">
-                        <a href="#">
+                        <a :href="'/tribe/article/'+item.article_id">
                             <img class="exhibition-image" :src="item" :alt="index">
                         </a>
                     </el-carousel-item>
@@ -27,7 +27,7 @@
 
                         <h2><i class="el-icon-info"></i> 近日咨询</h2>
                         <div v-for="(item, index) in news" :key="index" style="text-align: left;">
-                            <a href="#" class="link">
+                            <a :href="'/tribe/article/'+item.article_id" target="_blank" class="link">
                                 <i class="bi bi-newspaper" style="color: #efdbff;"></i>
                                 <span class="span-text" style="color: #efdbff;" v-text="item.title">
 
@@ -57,6 +57,7 @@
 
             </div>
         </el-col>
+
         <!-- 动态推荐模块，介绍宝可梦的一些有趣的事情 -->
         <el-col :span="12">
             <div class="model-recommend">
@@ -71,13 +72,14 @@
 
                         <!-- 这个盒子用于存放宝可梦的肖像 -->
                         <div class="bkm-image-box">
-                            <el-image style=" 
-                            width: 250px;
-                            height: auto;
+                            <el-image style="
+                            width: auto;
+                            height: 85%;
                             display: block;
                             border-radius: 8px;"
-                                :src="'https://tse1-mm.cn.bing.net/th/id/R-C.72751a7a285056d530cb5c44d68cc263?rik=r%2bTxSmIRPeVpIw&riu=http%3a%2f%2fi7.qhimg.com%2ft011c404bea16806c71.png&ehk=QaCvedNSSp9C0REdLBLxQsQ3qk%2bJAxWnYLyWewZ%2fr5s%3d&risl=&pid=ImgRaw&r=0'"
-                                :alt="showpkom.name"><br><br>
+                                :src="showpkom.image"
+                                :alt="showpkom.name">
+                            </el-image>
                                 <el-button type="danger">查看图鉴全部信息</el-button>
                         </div>
 

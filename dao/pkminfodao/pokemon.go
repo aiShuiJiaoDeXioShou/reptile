@@ -1,6 +1,7 @@
 package pkminfodao
 
 import (
+	"log"
 	"reptile/dao"
 
 	"gorm.io/gorm"
@@ -117,4 +118,19 @@ func (p *PkmDaoManger) FindPkmByNameLike(name string) *[]Pokemon {
 	var pkm []Pokemon
 	p.db.Where("name like ?", "%"+name+"%").Find(&pkm)
 	return &pkm
+}
+
+// 拿到这个表所有的数据
+func (p *PkmDaoManger) FindAllPkm() *[]Pokemon {
+	var pkm []Pokemon
+	err := p.db.Find(&pkm).Error
+	if err != nil {
+		log.Println(err)
+	}
+	return &pkm
+}
+
+// 更新数据库里面的image数据
+func (p *PkmDaoManger) UpdatePkmImage(id uint, image string) {
+	p.db.Model(&Pokemon{}).Where("id = ?", id).Update("image", image)
 }

@@ -1,9 +1,571 @@
 {{define "tribe/index.html"}}
+
 <head>
     <title>Document</title>
 </head>
+
 <body>
-    原来你就是部落盟主
+    {{template "base"}}
+    <template>
+        <div id="app-root">
+            <!-- 顶部开始 -->
+            <div class="top-root">
+                <div class="top-div">
+                    <header class="daohang">
+
+                    </header>
+                </div>
+                <div class="tu-div">
+                    <img class="img-div" src="/static/img/v2-a4ff18cc184e45b953e949ffff1f3f8c.jpg">
+                </div>
+            </div>
+            <!-- 顶部结束 -->
+            <!-- 中部开始 -->
+            <div class="zho-root">
+                <div class="left-div">
+                    <div class="serve">
+                        <div class="zho-top">
+                            <nav class="nav">
+                                <a href="">关注</a>
+                                <a href="">推荐</a>
+                                <a href="">热版</a>
+                                <a href="">视频</a>
+                            </nav>
+                            <div></div>
+                        </div>
+                        <div class="zho-button">
+                            <div class="zho-button-left">
+                                <div class="HotItem-hot">1</div>
+                            </div>
+                            <div class="zho-button-zho">
+                                <a href="" class="top">
+                                    <h2>唐山 3 天出现 3 份实名举报，均涉路北区，这个区域治安如何？为何会频发此类事件？</h2>
+                                    <p>唐山 3 天 3 份实名举报 继 6 月 10 日河北唐山蛋糕店老板实名举报涉黑团伙敲诈勒索、暴力打砸后，6 月 11 日、 12
+                                        日分别有女子实名举报遭逼迫下跪打「白条」，多人实名举报唐山女子徐某诈骗。三天三份举报均涉及唐山路北区。 唐山 3 天 3 份实名举报</p>
+                                </a>
+                                <div class="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" data-new-api="FireFill24"
+                                        data-old-api="FireFill24" class="ZDI ZDI--FireFill24 css-15ro776"
+                                        fill="currentColor">
+                                        <path
+                                            d="M14.602 21.118a8.89 8.89 0 003.72-2.232 8.85 8.85 0 002.618-6.31c0-.928-.14-1.836-.418-2.697a8.093 8.093 0 00-1.204-2.356s.025.035-.045-.055-.1-.115-.1-.115c-.955-1.078-1.504-1.984-1.726-2.854-.06-.232-.138-.88-.22-1.824L17.171 2l-.681.02c-.654.018-1.089.049-1.366.096a7.212 7.212 0 00-3.77 1.863 6.728 6.728 0 00-1.993 3.544l-.088.431-.182-.4a5.032 5.032 0 01-.326-.946 71.054 71.054 0 01-.204-.916l-.199-.909-.833.42c-.52.263-.862.462-1.076.624a8.588 8.588 0 00-2.5 2.976 8.211 8.211 0 00-.888 3.723 8.93 8.93 0 002.616 6.35 8.87 8.87 0 003.093 2.027c-.919-.74-1.593-1.799-1.76-3.051-.186-.703.05-2.352.849-2.79 0 1.938 2.202 3.198 4.131 2.62 2.07-.62 3.07-2.182 2.773-5.688 1.245 1.402 1.65 2.562 1.838 3.264.603 2.269-.357 4.606-2.003 5.86z"
+                                            fill-rule="evenodd" clip-rule="evenodd"></path>
+                                    </svg>
+                                    4617 万热度
+                                    <span>
+                                        <svg width="1.2em" height="1.2em" viewBox="0 0 24 24"
+                                            data-new-api="PaperplaneFill24" data-old-api="Share"
+                                            class="Zi Zi--Share Button-zi" fill="currentColor">
+                                            <path
+                                                d="M19.47 1.914a.8.8 0 011.204.778l-1.872 16.386a.9.9 0 01-1.204.743l-4.615-1.692a.7.7 0 00-.831.28l-1.927 3.02c-.43.674-1.474.369-1.474-.43v-3.865a.8.8 0 01.179-.504l5.808-7.148a.595.595 0 00-.897-.781l-5.93 6.354a1.1 1.1 0 01-1.258.252L2.57 13.46a.8.8 0 01-.08-1.415l16.98-10.13z">
+                                            </path>
+                                        </svg>
+                                        分享
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="zho-button-right">
+                                <img src="/static/img/v2-6fbce4bf69f66a3a570c6d328e4f5451_400x224.png">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-div">
+                    <div class="serve">
+                        <div class="neiro1">
+                            <div class="right-neiro-top">
+                                <svg width="24" height="24" viewBox="0 0 24 24" data-new-api="UserPencilFill24"
+                                    data-old-api="Creator" class="Zi Zi--Creator CreatorEntrance-creatorIcon"
+                                    fill="currentColor">
+                                    <path
+                                        d="M6.5 7.5A5.5 5.5 0 0112 2a5.5 5.5 0 015.5 5.5A5.5 5.5 0 0112 13a5.5 5.5 0 01-5.5-5.5zm8.11 9.498c.404-.408.91-1 1.17-1.51.067-.133.13-.284.165-.442.034-.15.058-.373-.033-.602a.872.872 0 00-.545-.509 1.37 1.37 0 00-.604-.043c-.657.082-1.518.184-2.373.24-.867.055-1.68.058-2.254-.041-1.189-.204-2.045-.19-2.781.087-.722.272-1.25.773-1.804 1.302-1.533 1.462-2.434 3.311-2.65 4.831-.11.78.535 1.339 1.199 1.339h8.1a.96.96 0 00.955-.929c.06-1.767.7-2.96 1.456-3.723zm6.504-1.568a.75.75 0 10-1.228-.86l-2.903 4.146a.75.75 0 001.229.86l2.902-4.146zm-4.227 6.099a.75.75 0 10-1.241-.842l-.267.392a.75.75 0 001.242.842l.266-.392z"
+                                        fill-rule="evenodd" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="right-neiro-top-zho">创作中心</div>
+                                <a href="" class="a">
+                                    <div class="div">草稿箱</div>
+                                    <span class="span">(0)</span>
+                                </a>
+                            </div>
+                            <div class="right-neiro-button">
+                                <div class="top">
+                                    <div class="serve">
+                                        <span class="a">
+                                            <svg width="40" height="40" viewBox="0 0 40 40"
+                                                class="GlobalWriteV2-navIcon" fill="currentColor">
+                                                <g fill="#06F" fill-rule="evenodd">
+                                                    <circle cx="20" cy="20" r="20" opacity=".12"></circle>
+                                                    <path
+                                                        d="M23.487 10.463c1.896 0 2.583.193 3.277.555a3.824 3.824 0 011.607 1.573c.371.678.569 1.35.569 3.206v8.472c0 1.855-.198 2.527-.569 3.205a3.824 3.824 0 01-1.607 1.573c-.694.363-1.381.556-3.277.556h-6.96c-1.895 0-2.583-.193-3.276-.556a3.824 3.824 0 01-1.608-1.573c-.37-.678-.568-1.35-.568-3.205v-8.472c0-1.855.197-2.528.568-3.206.37-.678.915-1.21 1.608-1.573.693-.362 1.38-.556 3.277-.556h6.959zm0 2.08h-6.96c-1.407 0-1.836.081-2.273.31a1.72 1.72 0 00-.735.72c-.234.427-.317.847-.317 2.224v8.472c0 1.377.083 1.796.317 2.224.172.316.412.551.735.72.437.229.866.31 2.274.31h6.959c1.407 0 1.836-.081 2.274-.31a1.72 1.72 0 00.735-.72c.234-.428.317-.847.317-2.224v-8.472c0-1.377-.083-1.797-.317-2.225a1.72 1.72 0 00-.735-.72c-.438-.228-.867-.309-2.274-.309zm-1.991 9.778v1.873h-5.955V22.32h5.955zm2.977-3.328v1.872h-8.932v-1.872h8.932zm0-3.33v1.873h-8.932v-1.872h8.932z"
+                                                        fill-rule="nonzero"> </path>
+                                                </g>
+                                            </svg>
+                                            <span class="q">回答问题</span>
+                                        </span>
+                                        <span class="a">
+                                            <svg width="40" height="40" viewBox="0 0 40 40"
+                                                class="GlobalWriteV2-navIcon" fill="currentColor">
+                                                <g fill="#FF9607" fill-rule="evenodd">
+                                                    <circle cx="20" cy="20" r="20" opacity=".12"></circle>
+                                                    <path
+                                                        d="M24.233 24.777v-9.555c0-.942-.748-1.706-1.67-1.706H13.61c-.922 0-1.67.764-1.67 1.707v9.554c0 .943.748 1.707 1.67 1.707h8.954c.921 0 1.669-.764 1.669-1.707zm3.478-10.349a2.302 2.302 0 013.297.243c.367.434.57.989.57 1.563v7.532c0 1.32-1.047 2.389-2.337 2.389a2.308 2.308 0 01-1.53-.583l-1.475-1.306v.512c0 2.073-1.644 3.753-3.672 3.753H13.61c-2.028 0-3.672-1.68-3.672-3.753v-9.555c0-2.074 1.644-3.754 3.672-3.754h8.954c2.028 0 3.672 1.68 3.672 3.754v.51l1.475-1.305zm-1.475 7.13l2.786 2.466a.33.33 0 00.219.083.338.338 0 00.334-.341v-7.532a.346.346 0 00-.082-.223.329.329 0 00-.47-.035l-2.787 2.466v3.116z"
+                                                        fill-rule="nonzero"></path>
+                                                </g>
+                                            </svg>
+                                            <span class="q">发视频</span>
+                                        </span>
+                                        <span class="a">
+                                            <svg width="40" height="40" viewBox="0 0 40 40"
+                                                class="GlobalWriteV2-navIcon" fill="currentColor">
+                                                <g fill="none" fill-rule="evenodd">
+                                                    <circle cx="20" cy="20" r="20" fill="#F4C807" opacity=".12">
+                                                    </circle>
+                                                    <path d="M6 6h28v28H6z"></path>
+                                                    <path fill="#F4C807"
+                                                        d="M20.406 11.772l-2.172 2.176h-2.29c-1.438 0-1.875.085-2.322.324-.33.176-.575.422-.751.752-.24.448-.324.886-.324 2.326v7.12c0 1.44.085 1.878.324 2.326.176.33.421.576.75.752.421.225.834.314 2.08.323l7.35.001c1.438 0 1.876-.084 2.323-.324.33-.176.575-.422.751-.752.24-.448.324-.886.324-2.326v-4.905l2.172-2.175v7.08c0 1.94-.202 2.643-.58 3.352a3.95 3.95 0 01-1.643 1.645c-.708.379-1.41.58-3.346.58h-7.108c-1.936 0-2.639-.201-3.347-.58a3.95 3.95 0 01-1.642-1.645c-.378-.71-.58-1.413-.58-3.352v-7.12c0-1.94.202-2.643.58-3.352a3.95 3.95 0 011.642-1.645c.708-.379 1.41-.58 3.347-.58h4.462zm6.908-2.053c.384.116.747.338 1.168.759l.188.189c.42.421.642.785.758 1.17a1.98 1.98 0 010 1.163c-.116.385-.337.749-.758 1.17l-6.9 6.911c-.62.622-.827.81-1.078 1.004-.251.193-.496.34-.784.47-.288.131-.553.226-1.392.48l-1.088.332a1.303 1.303 0 01-1.625-1.629l.33-1.09c.255-.84.35-1.104.48-1.393.13-.29.277-.534.47-.785.193-.252.381-.46 1.001-1.081l6.9-6.911c.42-.421.784-.643 1.168-.76a1.97 1.97 0 011.162 0zm-3.204 4.096l-4.797 4.805c-.547.548-.709.723-.852.91-.112.146-.19.276-.265.443-.097.214-.175.44-.4 1.182l-.094.31.31-.095c.74-.225.965-.303 1.179-.4.167-.076.297-.154.442-.266.187-.143.361-.305.909-.853l4.797-4.805-1.23-1.23zm2.546-2.43c-.109.033-.23.11-.443.324l-.874.875 1.228 1.231.875-.876c.213-.213.29-.334.323-.444a.24.24 0 000-.153c-.033-.11-.11-.23-.323-.445l-.189-.188c-.213-.214-.334-.291-.443-.325a.238.238 0 00-.154 0z"
+                                                        fill-rule="nonzero"></path>
+                                                </g>
+                                            </svg>
+                                            <span class="q">写文章</span>
+                                        </span>
+                                        <span class="a">
+                                            <svg width="40" height="40" viewBox="0 0 40 40"
+                                                class="GlobalWriteV2-navIcon" fill="currentColor">
+                                                <g fill="#26BFBF" fill-rule="evenodd">
+                                                    <circle cx="20" cy="20" r="20" opacity=".12"></circle>
+                                                    <path
+                                                        d="M21.987 11.686v2.169h-6.125c-1.43 0-1.863.064-2.297.306-.332.128-.574.383-.74.702-.255.447-.332.893-.332 2.297v7.018c0 1.442.09 1.876.332 2.297.166.345.408.587.74.766.434.23.868.319 2.297.319h7.018c1.43 0 1.863-.077 2.297-.32.345-.165.587-.408.766-.74.216-.408.296-.816.305-2.054l.001-6.316.025.025h2.17v6.074c0 1.914-.217 2.616-.587 3.318a3.92 3.92 0 01-1.634 1.62c-.689.383-1.403.575-3.317.575h-7.018c-1.915 0-2.616-.204-3.318-.575a3.891 3.891 0 01-1.62-1.62c-.384-.702-.575-1.404-.575-3.318v-7.018c0-1.914.204-2.629.574-3.318a3.996 3.996 0 011.62-1.633c.703-.383 1.404-.574 3.318-.574h6.1zm1.889 6.954c1.059 1.06 1.059 2.807 0 3.88l-.039.038a2.719 2.719 0 01-3.879 0l-2.45-2.553a.801.801 0 00-1.123 0l-.05.052c-.32.357-.32.893 0 1.212a.75.75 0 00.726.217c.51-.128 1.047.23 1.149.74a.946.946 0 01-.727 1.148 2.649 2.649 0 01-2.527-.74 2.796 2.796 0 010-3.905l.038-.025c1.098-1.085 2.808-1.085 3.892 0l2.463 2.488a.764.764 0 001.11 0l.038-.025a.855.855 0 000-1.187.876.876 0 00-.74-.217c-.51.128-1.02-.204-1.148-.727-.128-.51.204-1.021.727-1.149l.013-.013a2.703 2.703 0 012.527.766zm4.338-9.315v2.578h2.578v1.722h-2.578v2.59h-1.723v-2.602h-2.59v-1.71h2.59V9.325h1.723z"
+                                                        fill-rule="nonzero"></path>
+                                                </g>
+                                            </svg>
+                                            <span class="q">写想法</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="zho">
+                                    <div class="serve">
+                                        <div class="left">
+                                            <div class="top">开启你的知乎创作之旅</div>
+                                            <div class="button">发布首篇内容，开通创作中心 快来成为知乎创作者吧～</div>
+                                        </div>
+                                        <div class="right">
+                                            <img src="/static/img//kanshan.7de41a9a.png">
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="" class="button">
+                                    <div class="serve">
+                                        <span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" data-new-api="PlusFill24"
+                                                data-old-api="Plus" class="Zi Zi--Plus css-1qkvt8e" fill="currentColor">
+                                                <path
+                                                    d="M13.25 3.25a1.25 1.25 0 10-2.5 0v7.5h-7.5a1.25 1.25 0 100 2.5h7.5v7.5a1.25 1.25 0 102.5 0v-7.5h7.5a1.25 1.25 0 000-2.5h-7.5v-7.5z"
+                                                    fill-rule="evenodd" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </span>
+                                        开始创作
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="neiro2">
+                            <div class="right-neiro-top"></div>
+                            <div class="right-neiro-button"></div>
+                        </div>
+                        <div class="neiro3">
+                            <div class="right-neiro-top"></div>
+                            <div class="right-neiro-button"></div>
+                        </div>
+                        <div class="neiro4">
+                            <div class="right-neiro-top"></div>
+                            <div class="right-neiro-button"></div>
+                        </div>
+                        <div class="neiro5">
+                            <div class="right-neiro-top"></div>
+                            <div class="right-neiro-button"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中部结束 -->
+
+        </div>
+    </template>
+
+    <script>
+        //引入组件
+        // import ReBang from './components/ReBang.vue'
+
+
+        // export default {
+        // 	name: 'App',
+        // 	components: {
+        // 		ReBang
+        // 	}
+        // }
+    </script>
+
+    <style>
+        div {
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #app-root {
+            overflow: auto;
+            background: #f6f6f6;
+            font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+            font-size: 15px;
+            color: #121212;
+            margin: 0;
+            display: block;
+            margin: 8px;
+            -webkit-tap-highlight-color: rgba(18, 18, 18, 0);
+        }
+
+        /* 顶部开始 */
+        .top-root {
+
+            margin: 0;
+            min-width: 0;
+            width: 100%;
+
+
+        }
+
+        .top-root .top-div .daohang {
+            height: 52px;
+            background-color: #01BFFB;
+        }
+
+        .top-root .tu-div {
+            box-sizing: border-box;
+            margin: 0;
+            min-width: 0;
+            height: 200px;
+            background-color: #01BFFB;
+        }
+
+        .top-root .tu-div .img-div {
+            box-sizing: border-box;
+            margin: 0;
+            min-width: 0;
+            max-width: 100%;
+            height: auto;
+            max-width: 1366px;
+            margin: 0 auto;
+            display: block;
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 顶部结束 */
+        /* 中部开始 */
+        .zho-root {
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: start;
+            -ms-flex-align: start;
+            align-items: flex-start;
+            width: 1000px;
+            padding-right: 16px;
+            margin: 10px auto;
+        }
+
+        /* 中部左边开始 */
+        .zho-root .left-div {
+            flex-shrink: 0;
+            margin-right: 10px;
+            margin-bottom: 0;
+            width: 694px;
+        }
+
+        .zho-root .left-div .zho-top {
+            margin-bottom: 10px;
+            background: #fff;
+            overflow: hidden;
+            border-radius: 2px;
+
+        }
+
+        .zho-root .left-div .zho-top .nav {
+
+            display: flex;
+            border-bottom: 1px solid #f6f6f6;
+        }
+
+        .zho-root .left-div .zho-top .nav a {
+            align-items: center;
+            height: 58px;
+            font-size: 16px;
+            margin: 0 22px;
+            line-height: 58px;
+        }
+
+        .zho-root .left-div .zho-top .nav a:hover {
+            color: #01BFFB;
+        }
+
+        /* 导航条结束 */
+
+        .zho-root .left-div .zho-button {
+            padding: 16px 16px 16px 0;
+            position: relative;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-left {
+            width: 57px;
+            text-align: center;
+            position: absolute;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-left .HotItem-hot {
+            color: #ff9607;
+            font-weight: 600;
+            line-height: 1.6;
+            font-size: 18px;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-zho {
+            margin-left: 57px;
+            width: 415px;
+            /* flex: 1 1; */
+            overflow: hidden;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-zho a h2 {
+            font-size: 18px;
+            line-height: 28px;
+            max-height: 56px;
+            font-weight: 600;
+            color: #121212;
+            margin: 0;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-zho a p {
+            color: #444;
+            line-height: 25px;
+            margin-top: 2px;
+            min-height: 25px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-zho .button {
+            bottom: 16px;
+            font-size: 14px;
+
+            margin-top: 8px;
+            color: #8590a6;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-zho .button span {
+            color: #8590a6;
+            margin-left: 28px;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-right {
+            position: absolute;
+            height: 105px;
+            right: 32px;
+            top: 16px;
+        }
+
+        .zho-root .left-div .zho-button .zho-button-right img {
+            height: 105px;
+            width: 190px;
+
+        }
+
+        /* 中部左边结束 */
+        /* 中部右边开始 */
+        .zho-root .right-div {
+            width: 296px;
+            border: #BFBFBF solid 1px;
+        }
+
+        .zho-root .right-div .serve {
+            padding: 0 17px;
+        }
+
+        .zho-root .right-div .serve .neiro1 {
+            height: 2000px;
+            margin-bottom: 8px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-top {
+            height: 52px;
+            width: 100%;
+            padding: 0;
+            margin: 0 16px;
+
+        }
+
+        .CreatorEntrance-creatorIcon {
+            width: 18px;
+            height: 18px;
+            margin-left: 3px;
+            color: #444;
+            margin: 0, auto;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-top .right-neiro-top-zho {
+            margin-left: 6px;
+            line-height: 16px;
+            display: inline;
+            padding-right: 100px;
+            margin: 0, auto;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-top a {
+            margin: 0, auto;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-top .div {
+            box-sizing: border-box;
+            margin: 0px;
+            min-width: 0px;
+            color: rgb(133, 144, 166);
+            font-size: 12px;
+            cursor: pointer;
+            display: inline;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-top .span {
+            color: rgb(68, 68, 68);
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button {
+            box-sizing: border-box;
+            margin: 0px;
+            min-width: 0px;
+            width: 100%;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .top {
+            height: 92px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .top .serve {
+            position: relative;
+            padding: 8px 0 20px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .top .serve .q {
+            font-size: 12px;
+            line-height: 1;
+            text-align: center;
+            color: #444;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .top .serve .a {
+
+
+            width: 50px;
+            margin-right: 15px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .top .serve .a .GlobalWriteV2-navIcon {
+            padding-bottom: 12px;
+            width: 50px;
+            margin: 0 auto;
+            color: #8590a6;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho {}
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve {
+            box-sizing: border-box;
+            margin: 0px;
+            min-width: 0px;
+            width: 262px;
+            -webkit-box-align: center;
+            align-items: center;
+            height: 98px;
+            padding-left: 14px;
+            padding-right: 14px;
+            display: flex;
+            background: rgba(133, 144, 166, 0.05);
+            border-radius: 4px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve .left {
+            width: 166px;
+            height: 59px;
+
+
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve .left .top {
+            box-sizing: border-box;
+            margin: 0px;
+            min-width: 0px;
+            font-size: 15px;
+            line-height: 21px;
+            color: rgb(68, 68, 68);
+            display: -webkit-box;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            font-size: 15px;
+            height: 20px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve .left .button {
+
+            margin: 6px 0px 0px;
+            min-width: 0px;
+            font-size: 12px;
+            color: rgb(153, 153, 153);
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve .right {
+            margin: 0px 0px 0px 8px;
+            min-width: 0px;
+            width: 60px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .zho .serve .right img {
+            width: 61px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .button {}
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .button .serve {
+            margin: 0px 0px 18px;
+            min-width: 0px;
+            -webkit-box-pack: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            align-items: center;
+            display: flex;
+            border: 1px solid rgba(0, 102, 255, 0.5);
+            color: rgb(0, 102, 255);
+            border-radius: 4px;
+            cursor: pointer;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .zho-root .right-div .serve .neiro1 .right-neiro-button .button .serve span {
+            align-items: center;
+            display: inline-flex;
+        }
+
+        /* 中部右边结束 */
+        /* 中部结束 */
+    </style>
 </body>
+
 </html>
 {{end}}
