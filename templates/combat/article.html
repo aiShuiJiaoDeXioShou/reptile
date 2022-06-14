@@ -1,9 +1,11 @@
 {{define "combat/article.html"}}
 {{template "base".}}
 <link rel="stylesheet" href="/static/js/editor.md-master/css/editormd.preview.css" />
+<link rel="stylesheet" href="/static/css/bootstrap-icons/bootstrap-icons.css">
 
 <head>
     <title>显示文章数据</title>
+    <link rel="icon" href="/static/img/favicon.ico">
 </head>
 
 
@@ -11,14 +13,16 @@
 <link rel="stylesheet" href="/static/css/bulma.css">
 {{template "head"}}
 
-<div class="root-archive">
+<div class="root-archive" id="root-archive">
     <!--文章头部信息：标题，作者，最后更新日期，导航-->
     <div>
-
-        <h2 style="margin: auto 0">{{ .article.Title }}</h2>
-
-        作者：<span>{{.article.Author}}</span>
-        最后更新日期：<span>{{.article.UpdatedAt}}</span>
+        <input type="hidden" name="archive_id" id="archive_id" value="{{.article.ID}}">
+        <h2 style="margin: auto 0;font-size: 30px;font-weight: 800;margin-bottom: 8px;">{{ .article.Title }}</h2>
+        作者：<a class="author">{{.article.Author}}</a>
+        <div class="time">
+            最后更新日期：<span>{{.article.UpdatedAt}}</span><br>
+        </div>
+        <button class="button is-text" style="color: #2c58ec;">一共有位喜欢这篇文章</button><br>
 
     </div>
 
@@ -30,16 +34,77 @@
 
     </div>
 
-<!--文章主体内容-->
-<div id="doc-content">
+    <!--文章主体内容-->
+    <div id="doc-content">
 
-    <textarea placeholder="markdown">
+        <textarea placeholder="markdown">
 {{.article.Content}}
-    </textarea>
+        </textarea>
+
+    </div>
+
+    <!-- 这个是下面操作栏部分 -->
+    <div class="operation">
+
+        <!-- 喜欢 -->
+        <div>
+            <button v-if="!islik" class="button is-success is-light">
+                <i class="bi bi-caret-down"></i>
+                like
+            </button>
+
+            <button v-if="islik" class="button is-success">
+                <i class="bi bi-caret-down-fill"></i>
+                ok
+            </button>
+
+        </div>
+
+        <!-- 收藏 -->
+        <div>
+            <div v-if="!iscollection">
+                <button class="button is-white star">
+                    <i class="bi bi-star"></i>
+                </button>
+            </div>
+            <div v-if="iscollection">
+                <button class="button is-white star-fill">
+                    <i class="bi bi-star-fill"></i>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- 评论 -->
+        <div>
+            <button class="comment button is-white" @click="comment">
+                <i class="bi bi-chat-left"></i>
+            </button>
+        </div>
+
+        <!-- 转载 -->
+        <div>
+            <button class="button is-white">
+                <i class="bi bi-share"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 评论区 -->
+    <div>
+        <div :class="{'modal':true,'is-active':is_active}">
+            <div class="modal-background" @click="close"></div>
+            <div class="modal-content">
+                <div v-for="(item, index) in comments" :key="index">
+                    <comment-item :comment="item" :user="cmuser(item.user_id)"></comment-item>
+                </div>
+            </div>
+            <button @click="close" class="modal-close is-large" aria-label="close"></button>
+        </div>
+    </div>
 
 </div>
-
-</div>
+<script src="/static/js/axios.js"></script>
 <script src="/static/js/editor.md-master/editormd.js"></script>
 <script src="/static/js/editor.md-master/lib/marked.min.js"></script>
 <script src="/static/js/editor.md-master/lib/prettify.min.js"></script>
@@ -59,8 +124,129 @@
             tex: true, // 默认不解析
             flowChart: true, // 默认不解析
             sequenceDiagram: true, // 默认不解析
-            codeFold: true
+            codeFold: true,
+            comment_loading: false,
+            article_id: 0,
         });
+    });
+
+    // 自定义的评论模板
+    let commentItem = {
+        props: {
+            comment: {},
+            user: {}
+        },
+        name: 'comment-item',
+        template: `
+        <div class="comment-root">
+            <div class="comment">
+                <!-- 头像 -->
+                <div class="head">
+                    <span v-text="user.name"></span>
+                    <img class="head-image" size="16" :src="user.image==''?user.image:'/static/img/皮卡丘官方图.png'">
+                </div>
+
+                <!-- 内容 -->
+                <div class="content">
+                    <span v-text="comment.content"></span>     
+                </div>
+
+                <!-- 点击查看更多 -->
+                <div>
+                    <button class="button is-white wtich" @click="all_comment(comment.ID)">点击查看更多</button>
+                    <button class="button is-white">评论</button>
+                </div>
+            </div>
+
+            <div class="chr">
+                    
+                
+                <div v-if="children.length > 0" v-for="(commentChren,index) in children" class="comment">
+
+                    <!-- 头像 -->
+                    <div class="head">
+                        <span v-text="cmuser(commentChren.article_id).name + '@' + cmuser(commentChren.to_user_id).name"></span>
+                        <img size="16" :src="comment.image">
+                    </div>
+
+                    <!-- 内容 -->
+                    <div class="content">
+                        <span v-text="commentChren.content"></span>     
+                    </div>
+
+                    <!-- 点击查看更多 -->
+                    <div>
+                        <button class="button is-white">评论</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        `,
+        methods: {
+            all_comment(id) {
+                this.is_active = true;
+                this.comment_loading = true;
+                axios.get('/article/comment/' + id).then(res => {
+                    this.children = res.data.data.comments
+                    this.childrenusers = res.data.data.users
+                    console.log(this.children);
+                    console.log(this.childrenusers);
+                    console.log(res.data);
+                })
+            },
+            cmuser(id) {
+                return this.localusers.filter(user => user.ID == id)[0]
+            },
+        },
+        data() {
+            return {
+                children: [],
+                localusers: this.users,
+                childrenusers: []
+            }
+        },
+    }
+
+    const articleroot = new Vue({
+        el: '#root-archive',
+        name: 'archiveroot',
+        data() {
+            return {
+                islik: false,
+                iscollection: false,
+                is_active: false,
+                comments: [],
+                users: []
+            }
+        },
+        methods: {
+            comment() {
+                this.is_active = true;
+                this.comment_loading = true;
+                axios.get('/article/comment/top/' + this.article_id).then(res => {
+                    this.comment_loading = false;
+                    console.log(res.data);
+                    this.comments = res.data.data.comments;
+                    this.users = res.data.data.users;
+                })
+            },
+            close() {
+                this.is_active = false;
+            },
+            cmuser(id) {
+                return this.users.filter(user => user.ID == id)[0]
+            },
+
+        },
+        mounted() {
+            this.article_id = document.querySelector("#archive_id").value;
+        },
+        components: {
+            commentItem: commentItem
+        },
+        computed: {}
     });
 </script>
 
@@ -68,17 +254,106 @@
     .root-archive {
         width: 65%;
         margin: 100px auto;
-        border-radius: 13px;
-        background: #e0e0e0;
-        box-shadow:  20px 20px 60px #bebebe,
-        -20px -20px 60px #ffffff;
+        border-radius: 5px;
+        background: #ffff;
+        box-shadow: 0 1px 3px rgb(18 18 18 / 10%);
+        min-height: 800px;
     }
 
-    .nav-bar {
-
+    .root-archive .time {
+        color: #cccc;
+        margin-top: 5px;
+        font-size: 11px;
     }
-    #tophead{
+
+    .root-archive .time:hover {
+        color: crimson;
+        cursor: pointer;
+    }
+
+    .root-archive .author {
+        font-weight: 600;
+        font-synthesis: style;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .root-archive .author:hover {
+        color: skyblue;
+        cursor: pointer;
+    }
+
+    .root-archive .star {
+        font-size: 16px;
+        cursor: pointer;
+        color: #ecdfaa;
+    }
+
+    .root-archive .star-fill {
+        font-size: 16px;
+        cursor: pointer;
+        color: #ecdfaa;
+    }
+
+    .root-archive .comment {
+        color: skyblue;
+    }
+
+    .root-archive .operation {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        min-width: 65%;
+        background: #ffff;
+        box-shadow: 0 3px 10px rgb(18 18 18 / 22%);
+        flex-direction: row;
+        justify-items: center;
+    }
+
+    .root-archive .operation>div {
+        flex: 0.1;
+    }
+
+    .root-archive .comment .wtich {
+        font-size: 11px;
+    }
+
+    .root-archive .comment .wtich:hover {
+        color: skyblue;
+    }
+
+    #tophead {
         height: 80px;
+    }
+
+    .comment-root {
+        border-radius: 10px;
+        background: #ffff;
+        font-size: 5px;
+        margin: 20px auto;
+        text-align: left;
+    }
+
+    .comment-root .head-image {
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+    }
+
+    .comment-root a:hover {
+        text-decoration: none;
+        color: skyblue;
+
+    }
+
+    .comment-root .chr {
+        padding:20px 0 0 50px;
+        border-radius: 5px;
+    }
+
+    .comment-root .head {
+        display: flex;
+        margin-bottom: 10px;
     }
 </style>
 {{end}}

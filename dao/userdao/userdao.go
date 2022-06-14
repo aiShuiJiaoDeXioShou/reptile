@@ -180,6 +180,12 @@ func DeleteRole(id uint) (err error) {
 	return
 }
 
+// 根据一组id查询用户的头像和姓名
+func FindUserByIds(ids []uint) (users []User, err error) {
+	err = dao.Select("id,head_portrait,name").Where("id in (?)", ids).Find(&users).Error
+	return
+}
+
 // 修改角色
 func UpdateRole(role *Role) (err error) {
 	err = dao.Model(role).Updates(role).Error

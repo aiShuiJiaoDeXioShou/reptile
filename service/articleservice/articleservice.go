@@ -40,6 +40,126 @@ func StartArticleService(router *gin.Engine) {
 		rg.POST("collect/:id/:type", LikeArticle)
 	}
 
+	// 创建一个评论api列表
+	comments := rg.Group("/comment")
+	{
+		// 添加一个评论
+		comments.POST("/", AddComment)
+		// 删除一条评论
+		comments.DELETE("/:id", DeleteComment)
+		// 查看这条评论的所有子评论
+		comments.GET("/:id", GetChildrenComment)
+		// 获取指定文章所有顶楼的评论
+		comments.GET("/top/:id", GetTopComment)
+	}
+
+}
+
+// 获取指定文章的顶楼评论
+func GetTopComment(ctx *gin.Context) {
+	id := ctx.Param("id")
+	// 将stringid强转为uid类型
+	u, err := comm.ParseUint(id)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
+		return
+	}
+	// 找到所有顶楼的评论
+	comments, err := am.FindCommentByRelationCommentId(0, u)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
+		return
+	}
+
+	// 根据评论用户id查询用户信息
+	var userids []uint
+	for _, comment := range comments {
+		userids = append(userids, comment.UserId)
+	}
+
+	// 查询用户信息
+	users, err := userdao.FindUserByIds(userids)
+
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,找不到用户!"))
+		return
+	}
+
+	ctx.JSON(200, res.Ok(gin.H{
+		"comments": comments,
+		"users":    users,
+	}))
+}
+
+// 获取子评论
+func GetChildrenComment(ctx *gin.Context) {
+	id := ctx.Param("id")
+	// 将stringid强转为uid类型
+	u, err := comm.ParseUint(id)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
+		return
+	}
+	// 找到所有顶楼的评论
+	comments, err := am.FindCommentChildren(u)
+
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
+		return
+	}
+
+	// 根据评论用户id查询用户信息
+	var userids []uint
+	for _, comment := range comments {
+		userids = append(userids, comment.UserId)
+	}
+
+	// 查询用户信息
+	users, err := userdao.FindUserByIds(userids)
+
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,找不到用户!"))
+		return
+	}
+
+	ctx.JSON(200, res.Ok(gin.H{
+		"comments": comments,
+		"users":    users,
+	}))
+}
+
+func DeleteComment(ctx *gin.Context) {
+	id := ctx.Param("id")
+	// 将stringid强转为uid类型
+	u, err := comm.ParseUint(id)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("删除评论失败,格式错误!"))
+		return
+	}
+	err = am.DeleteComment(u)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("删除评论失败,格式错误!"))
+		return
+	}
+	ctx.JSON(200, res.Ok("删除评论成功!"))
+}
+
+func AddComment(ctx *gin.Context) {
+	// 获取文章的评论
+	var comment pkminfodao.ArticleComment
+	err := ctx.ShouldBindJSON(&comment)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
+		return
+	}
+
+	err = am.AddComment(&comment)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("评论失败,格式错误!"))
+		return
+	}
+
+	ctx.JSON(200, res.Ok("评论成功!"))
 }
 
 func LikeArticle(ctx *gin.Context) {

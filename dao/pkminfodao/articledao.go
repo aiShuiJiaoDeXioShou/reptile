@@ -7,20 +7,20 @@ import (
 )
 
 // 更新数据库表的信息
-func init(){
-	dao.DB.AutoMigrate(&Article{}, &ArticleComment{},&ArticleLike{},&ArticleComment{})
+func init() {
+	dao.DB.AutoMigrate(&Article{}, &ArticleComment{}, &ArticleLike{}, &ArticleComment{})
 }
 
-func NewArticleManager()(*ArticleManager){
+func NewArticleManager() *ArticleManager {
 	return &ArticleManager{
-		Dao:dao.DB,
+		Dao: dao.DB,
 	}
 }
 
 type (
 	Article struct {
 		gorm.Model
-		Title string `gorm:"type:text;not null" json:"title" validate:"required" query:"title" form:"title"`
+		Title   string `gorm:"type:text;not null" json:"title" validate:"required" query:"title" form:"title"`
 		Content string `form:"content" gorm:"type:text;null" json:"content" validate:"required" query:"content"`
 		// 文章类型
 		Type string `gorm:"type:text;null" json:"type" validate:"required" query:"type"`
@@ -38,17 +38,20 @@ type (
 	ArticleLike struct {
 		gorm.Model
 		ArticleId uint `gorm:"not null" json:"article_id" validate:"required" query:"article_id"`
-		Type int `gorm:"not null" json:"type" validate:"required" query:"type"`
-		UserId uint `gorm:"not null" json:"user_id" validate:"required" query:"user_id"`
+		Type      int  `gorm:"not null" json:"type" validate:"required" query:"type"`
+		UserId    uint `gorm:"not null" json:"user_id" validate:"required" query:"user_id"`
 	}
 	// 评论表
 	ArticleComment struct {
 		gorm.Model
 		// 这个是关联的评论楼层，如果为零就是顶楼
-		RelationCommentId uint `json:"relation_comment_id" validate:"required" query:"relation_comment_id"`
-		ArticleId uint `gorm:"not null" json:"article_id" validate:"required" query:"article_id"`
-		Content string `gorm:"type:text;null" json:"content" validate:"required" query:"content"`
+		RelationCommentId uint   `json:"relation_comment_id" validate:"required" query:"relation_comment_id"`
+		ArticleId         uint   `gorm:"not null" json:"article_id" validate:"required" query:"article_id"`
+		Content           string `gorm:"type:text;null" json:"content" validate:"required" query:"content"`
+		// 评论用户
 		UserId uint `gorm:"not null" json:"user_id" validate:"required" query:"user_id"`
+		// 被评论用户
+		ToUserID uint `gorm:"not null" json:"to_user_id" validate:"required" query:"to_user_id"`
 	}
 )
 
@@ -65,10 +68,10 @@ func (am *ArticleManager) FindArticleById(articleId uint) (article Article, err 
 }
 
 // 查找自己所有的文章
-func (am *ArticleManager) FindAllArticle(userId uint) ([]Article,error) {
+func (am *ArticleManager) FindAllArticle(userId uint) ([]Article, error) {
 	var articles []Article
 	err := am.Dao.Where("author_id = ?", userId).Find(&articles).Error
-	return articles,err
+	return articles, err
 }
 
 // 删除自己的指定文章
@@ -120,9 +123,15 @@ func (am *ArticleManager) FindCommentByArticleId(articleId uint) (comments []Art
 	return
 }
 
-// 指定关联楼层的评论
-func (am *ArticleManager) FindCommentByRelationCommentId(relationCommentId uint) (comments []ArticleComment, err error) {
-	err = am.Dao.Where("relation_comment_id = ?", relationCommentId).Find(&comments).Error
+// 评论无法修改，该文章下面的所有评论
+func (am *ArticleManager) FindCommentByRelationCommentId(relationCommentId uint, article_id uint) (comments []ArticleComment, err error) {
+	err = am.Dao.Where("relation_comment_id = ? and article_id = ?", relationCommentId, article_id).Find(&comments).Error
+	return
+}
+
+// 获取指定楼层的评论
+func (am *ArticleManager) FindCommentChildren(comment uint) (comments []ArticleComment, err error) {
+	err = am.Dao.Where("relation_comment_id = ?", comment).Find(&comments).Error
 	return
 }
 
