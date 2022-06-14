@@ -1,6 +1,7 @@
 package pkminfodao
 
 import (
+	"log"
 	"reptile/dao"
 
 	"gorm.io/gorm"
@@ -135,6 +136,28 @@ func (am *ArticleManager) FindCommentChildren(comment uint) (comments []ArticleC
 	return
 }
 
+// 获取指定楼层所有的评论
+func (am *ArticleManager) FindCommentAllChildren(comment uint) (comments []ArticleComment, err error) {
+	var commentsChildrenTop []ArticleComment
+	err = am.Dao.Where("relation_comment_id = ?", comment).Find(&commentsChildrenTop).Error
+
+	for _, comment := range commentsChildrenTop {
+
+		commentsChildren, commentsChildrenErr := am.FindCommentAllChildren(comment.ID)
+
+		if commentsChildrenErr != nil {
+			log.Print(commentsChildrenErr)
+			return
+		}
+
+		comments = append(comments, comment)
+
+		comments = append(comments, commentsChildren...)
+	}
+
+	return
+}
+
 // 判断指定关联楼层是否有评论
 func (am *ArticleManager) IsCommentByRelationCommentId(relationCommentId uint) (isComment bool, err error) {
 	var comment ArticleComment
@@ -154,5 +177,21 @@ func (am *ArticleManager) AddLike(like *ArticleLike) (err error) {
 // 添加一条收藏
 func (am *ArticleManager) AddCollect(collect *ArticleLike) (err error) {
 	err = am.Dao.Create(collect).Error
+	return
+}
+
+// 删除一条收藏或者点赞
+func (am *ArticleManager) DeleteLikeOrCollect(like *ArticleLike) (err error) {
+	err = am.Dao.Delete(like).Error
+	return
+}
+
+// 判断当前用户是否收藏过该文章
+func (am *ArticleManager) IsCollect(userId,articleId uint,typestr int ) (isCollect bool, err error) {
+	var collect ArticleLike
+	err = am.Dao.Where("user_id = ? and article_id = ? and type = ?", userId, articleId,typestr).First(&collect).Error
+	if err != nil {
+		isCollect = true
+	}
 	return
 }

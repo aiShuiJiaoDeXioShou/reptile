@@ -2,7 +2,8 @@
 {{template "base".}}
 <link rel="stylesheet" href="/static/js/editor.md-master/css/editormd.preview.css" />
 <link rel="stylesheet" href="/static/css/bootstrap-icons/bootstrap-icons.css">
-
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <head>
     <title>显示文章数据</title>
     <link rel="icon" href="/static/img/favicon.ico">
@@ -28,7 +29,7 @@
 
     <div class="nav-bar">
 
-        <a class="tag is-link is-light" href="/combat/article/{{.article.ID}}">首页</a>
+        <a class="tag is-link is-light" href="/">首页</a>
         <a class="tag is-info is-light" href="/combat/article/{{.article.ID}}/edit">编辑</a>
         <a class="tag is-danger is-light" href="/combat/article/{{.article.ID}}/delete">删除</a>
 
@@ -48,12 +49,12 @@
 
         <!-- 喜欢 -->
         <div>
-            <button v-if="!islik" class="button is-success is-light">
+            <button @click="onlike" v-if="!islik" class="button is-success is-light">
                 <i class="bi bi-caret-down"></i>
                 like
             </button>
 
-            <button v-if="islik" class="button is-success">
+            <button @click="unlike" v-if="islik" class="button is-success">
                 <i class="bi bi-caret-down-fill"></i>
                 ok
             </button>
@@ -63,12 +64,12 @@
         <!-- 收藏 -->
         <div>
             <div v-if="!iscollection">
-                <button class="button is-white star">
+                <button @click="oncollection" class="button is-white star">
                     <i class="bi bi-star"></i>
                 </button>
             </div>
             <div v-if="iscollection">
-                <button class="button is-white star-fill">
+                <button @click="uncollection" class="button is-white star-fill">
                     <i class="bi bi-star-fill"></i>
                 </button>
 
@@ -92,18 +93,35 @@
 
     <!-- 评论区 -->
     <div>
-        <div :class="{'modal':true,'is-active':is_active}">
-            <div class="modal-background" @click="close"></div>
-            <div class="modal-content">
-                <div v-for="(item, index) in comments" :key="index">
-                    <comment-item :comment="item" :user="cmuser(item.user_id)"></comment-item>
+        <div :class="{'modal':true,'is-active':is_active,'commit-root':true}">
+            <div class="modal-data">
+                <div class="modal-background" @click="close"></div>
+                <div class="modal-content">
+                    <div v-for="(item, index) in commentxs" :key="index">
+                        <comment-item :comment="item" :user="item.user"></comment-item>
+                    </div>
                 </div>
+                <div style="display: flex;padding:10px 0;">
+                    <button @click="speechToUser" class="button is-primary" style="margin-right: 10px;">
+                        <i class="bi bi-send"></i>
+                    </button>
+                    <input id="nowToSpeechID" type="hidden" value="nowToSpeechID">
+                    <input id="relation_comment_id" type="hidden" value="relation_comment_id">
+                    <input id="speech" v-model="speech" class="input is-normal" type="text"
+                        placeholder="我想友善的言语是文明的催化剂！">
+                </div>
+
+                <button @click="close" class="modal-close is-large" aria-label="close"></button>
             </div>
-            <button @click="close" class="modal-close is-large" aria-label="close"></button>
+
         </div>
     </div>
 
 </div>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="/static/js/axios.js"></script>
 <script src="/static/js/editor.md-master/editormd.js"></script>
 <script src="/static/js/editor.md-master/lib/marked.min.js"></script>
@@ -125,25 +143,31 @@
             flowChart: true, // 默认不解析
             sequenceDiagram: true, // 默认不解析
             codeFold: true,
-            comment_loading: false,
-            article_id: 0,
         });
     });
 
     // 自定义的评论模板
     let commentItem = {
+        name: 'comment-item',
         props: {
             comment: {},
             user: {}
         },
-        name: 'comment-item',
+        data() {
+            return {
+                children: [],
+                localusers: this.users,
+                childrenusers: [],
+                childrenComment: []
+            }
+        },
         template: `
         <div class="comment-root">
             <div class="comment">
                 <!-- 头像 -->
                 <div class="head">
-                    <span v-text="user.name"></span>
-                    <img class="head-image" size="16" :src="user.image==''?user.image:'/static/img/皮卡丘官方图.png'">
+                    <img class="head-image" size="16" :src="user.image.length>0?user.image:'/static/img/皮卡丘官方图.png'">
+                    <span class="head-name" v-text="user.name"></span>
                 </div>
 
                 <!-- 内容 -->
@@ -152,59 +176,67 @@
                 </div>
 
                 <!-- 点击查看更多 -->
-                <div>
-                    <button class="button is-white wtich" @click="all_comment(comment.ID)">点击查看更多</button>
-                    <button class="button is-white">评论</button>
+                <div class="see">
+                    <button style="color:#595959" class="button  is-small is-white wtich" @click="all_comment(comment.id)">点击查看更多</button>
+                    <button style="color:#595959" class="button  is-small is-white" @click="commentToUser(comment)">评论</button>
+                </div>
+
+                <div class="submit">
+
                 </div>
             </div>
 
             <div class="chr">
                     
                 
-                <div v-if="children.length > 0" v-for="(commentChren,index) in children" class="comment">
+                <div v-if="childrenComment.length > 0" v-for="(commentChren,index) in childrenComment" class="comment">
 
                     <!-- 头像 -->
                     <div class="head">
-                        <span v-text="cmuser(commentChren.article_id).name + '@' + cmuser(commentChren.to_user_id).name"></span>
-                        <img size="16" :src="comment.image">
+                        <img class="head-image" :src='commentChren.user.image.length >0 ?"/static/img/皮卡丘官方图.png":"/static/img/小火龙官方图.png"'>
+                        <span class="head-name" style="font-size:15px;" v-text="commentChren.user.name + '@' +commentChren.touser.name"></span>
                     </div>
 
                     <!-- 内容 -->
-                    <div class="content">
-                        <span v-text="commentChren.content"></span>     
+                    <div class="content" style="margin-bottom:5px">
+                        <span style="font-size:15px;" v-text="commentChren.content"></span>     
                     </div>
 
                     <!-- 点击查看更多 -->
-                    <div>
-                        <button class="button is-white">评论</button>
+                    <div class="see">
+                        <button class="button  is-small is-white" @click="commentToUser(commentChren)">评论</button>
                     </div>
 
                 </div>
 
             </div>
+
         </div>
         `,
         methods: {
             all_comment(id) {
-                this.is_active = true;
-                this.comment_loading = true;
                 axios.get('/article/comment/' + id).then(res => {
                     this.children = res.data.data.comments
                     this.childrenusers = res.data.data.users
                     console.log(this.children);
                     console.log(this.childrenusers);
                     console.log(res.data);
+                    this.childrenComment = res.data.data.childrenComment;
                 })
             },
             cmuser(id) {
-                return this.localusers.filter(user => user.ID == id)[0]
+                return this.childrenusers.filter(user => user.ID == id)[0]
             },
-        },
-        data() {
-            return {
-                children: [],
-                localusers: this.users,
-                childrenusers: []
+            commentToUser(comment) {
+                let speech = document.querySelector("#speech")
+                let nowToSpeechID = document.querySelector("#nowToSpeechID")
+                let relation_comment_id = document.querySelector("#relation_comment_id")
+                // 修剪拿到的输入框文本
+                let str = speech.value.slice(speech.value.indexOf('->') + 3, speech.value.length)
+                // 设置隐藏域里面id的参数
+                nowToSpeechID.value = comment.user.id
+                relation_comment_id.value = comment.id
+                speech.value = "@" + comment.user.name + " -> " + str
             }
         },
     }
@@ -218,7 +250,11 @@
                 iscollection: false,
                 is_active: false,
                 comments: [],
-                users: []
+                users: [],
+                speech: '',
+                comment_loading: false,
+                article_id: 0,
+                commentxs:[]
             }
         },
         methods: {
@@ -230,6 +266,7 @@
                     console.log(res.data);
                     this.comments = res.data.data.comments;
                     this.users = res.data.data.users;
+                    this.commentxs = res.data.data.commentxs;
                 })
             },
             close() {
@@ -238,15 +275,126 @@
             cmuser(id) {
                 return this.users.filter(user => user.ID == id)[0]
             },
+            // 获取格式，解析格式，添加评论
+            speechToUser() {
+                let nowToSpeechID = document.querySelector("#nowToSpeechID")
+                let relation_comment_id = document.querySelector("#relation_comment_id")
+                let index = this.speech.indexOf('->')
+                console.log(index);
+
+                if(index != -1) {
+                    this.speech = this.speech.slice(index + 3, this.speech.length)
+                }
+                
+
+                axios.post('/article/comment/', {
+                    article_id: Number(this.article_id), // 强转为数字
+                    to_user_id: Number(nowToSpeechID.value),
+                    content: this.speech,
+                    relation_comment_id: Number(relation_comment_id.value),
+                }).then(res => {
+                    this.comment();
+                    this.speech = '';
+                })
+            },
+            oncollection(){
+                axios.post("/article/collect/" + this.article_id + '/' + 1).then(res => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: '收藏成功',
+                            type: 'success'
+                        })
+                        this.iscollection = true;
+                    }else{
+                        this.$message({
+                            message: '收藏失败',
+                            type: 'error'
+                        })
+                    }
+                })
+            },
+            uncollection(){
+                axios({
+                    method: 'delete',
+                    url: '/article/collect/' + this.article_id+'/'+1,
+                }).then(res => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: '取消收藏成功',
+                            type: 'success'
+                        })
+                        this.iscollection = false;
+                    }else{
+                        this.$message({
+                            message: '取消收藏失败',
+                            type: 'error'
+                        })
+                    }
+                })
+            },
+            onlike(){
+                axios.post("/article/like/" + this.article_id + '/' + 0).then(res => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: '点赞成功',
+                            type: 'success'
+                        })
+                        this.islik = true;
+                    }else{
+                        this.$message({
+                            message: '点赞失败',
+                            type: 'error'
+                        })
+                    }
+                })
+            },
+            unlike(){
+                axios({
+                    method: 'delete',
+                    url: '/article/like/' + this.article_id+'/'+0,
+                }).then(res => {
+                    if(res.data.code == 200){
+                        // 提示该用户点赞成功
+                        this.$message({
+                            message: '取消点赞成功',
+                            type: 'success'
+                        })
+                        this.islik = false;
+                    }else{
+                        this.$message({
+                            message: '取消点赞失败',
+                            type: 'error'
+                        })
+                    }
+                })
+            }
+
 
         },
         mounted() {
             this.article_id = document.querySelector("#archive_id").value;
+            axios.get("/article/collect/"+ this.article_id).then(res=>{
+                if(res.data.code == 200){
+                    this.iscollection = true;
+                }
+            })
+            axios.get("/article/like/"+ this.article_id).then(res=>{
+                if(res.data.code == 200){
+                    this.iscollection = true;
+                }
+            })
         },
         components: {
             commentItem: commentItem
         },
-        computed: {}
+        watch: {
+            speech(now, old) {
+                let ton = /@.*->/
+                if (!now.trim().length > 0 || ton.exec(now) == null) {
+                    this.nowToSpeechID = 0
+                }
+            }
+        }
     });
 </script>
 
@@ -315,7 +463,7 @@
     }
 
     .root-archive .comment .wtich {
-        font-size: 11px;
+        font-size: 12px;
     }
 
     .root-archive .comment .wtich:hover {
@@ -334,10 +482,33 @@
         text-align: left;
     }
 
+    .comment-root .head {
+        padding: 10px 0 0 10px;
+        display: flex;
+    }
+
     .comment-root .head-image {
+        display: block;
         border-radius: 50%;
-        width: 16px;
-        height: 16px;
+        width: 50px;
+        height: auto;
+        border-radius: 50px;
+        background: #e0e0e0;
+        box-shadow: 20px 20px 60px #bebebe,
+            -20px -20px 60px #ffffff;
+    }
+
+    .comment-root .head-name {
+        display: block;
+        font-size: 32px;
+        padding-left: 10px;
+
+    }
+
+    .comment-root .content {
+        padding: 10px;
+        font-size: 24px;
+        color: #262626;
     }
 
     .comment-root a:hover {
@@ -346,14 +517,29 @@
 
     }
 
+    .comment-root .see {
+        font-size: 8px;
+        color: #cccc;
+    }
+
     .comment-root .chr {
-        padding:20px 0 0 50px;
+        padding: 20px 0 0 50px;
         border-radius: 5px;
     }
 
     .comment-root .head {
         display: flex;
         margin-bottom: 10px;
+    }
+
+    .comment-root .submit {}
+
+    .modal-data {
+        padding: 20px 0 40px 0;
+    }
+    .chr .head,.content,.see{
+        padding: 0;
+        margin: 0;
     }
 </style>
 {{end}}

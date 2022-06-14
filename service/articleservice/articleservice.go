@@ -38,6 +38,16 @@ func StartArticleService(router *gin.Engine) {
 
 		// 文章收藏
 		rg.POST("collect/:id/:type", LikeArticle)
+
+		// 判断当前用户是否收藏过该文章
+		rg.GET("/collect/:id", IsCollectArticle)
+
+		// 判断当前用户是否点赞过该文章
+		rg.GET("/like/:id", IsLikeArticle)
+
+		// 取消当前用户收藏或者点赞文章
+		rg.DELETE("/collect/:id/:type", UnLikeArticle)
+		rg.DELETE("/like/:id/:type", UnLikeArticle)
 	}
 
 	// 创建一个评论api列表
@@ -64,6 +74,7 @@ func GetTopComment(ctx *gin.Context) {
 		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
 		return
 	}
+
 	// 找到所有顶楼的评论
 	comments, err := am.FindCommentByRelationCommentId(0, u)
 	if err != nil {
@@ -73,8 +84,24 @@ func GetTopComment(ctx *gin.Context) {
 
 	// 根据评论用户id查询用户信息
 	var userids []uint
+
+	// 创造返回数据的变量
+	var childrenComment []gin.H
 	for _, comment := range comments {
+
 		userids = append(userids, comment.UserId)
+		user, _ := userdao.FindUserById(comment.UserId)
+
+		childrenComment = append(childrenComment, gin.H{
+			"id":      comment.ID,
+			"content": comment.Content,
+			"user": gin.H{
+				"id":    user.ID,
+				"name":  user.Name,
+				"image": user.HeadPortrait,
+			},
+			"create_time": comment.CreatedAt,
+		})
 	}
 
 	// 查询用户信息
@@ -86,8 +113,9 @@ func GetTopComment(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, res.Ok(gin.H{
-		"comments": comments,
-		"users":    users,
+		"comments":  comments,
+		"users":     users,
+		"commentxs": childrenComment,
 	}))
 }
 
@@ -100,8 +128,8 @@ func GetChildrenComment(ctx *gin.Context) {
 		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
 		return
 	}
-	// 找到所有顶楼的评论
-	comments, err := am.FindCommentChildren(u)
+	// 找到所有与此楼相关的评论
+	comments, err := am.FindCommentAllChildren(u)
 
 	if err != nil {
 		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
@@ -110,8 +138,29 @@ func GetChildrenComment(ctx *gin.Context) {
 
 	// 根据评论用户id查询用户信息
 	var userids []uint
+	// 创造返回数据的变量
+	var childrenComment []gin.H
 	for _, comment := range comments {
+
 		userids = append(userids, comment.UserId)
+		user, _ := userdao.FindUserById(comment.UserId)
+		touser, _ := userdao.FindUserById(comment.ToUserID)
+
+		childrenComment = append(childrenComment, gin.H{
+			"id":      comment.ID,
+			"content": comment.Content,
+			"user": gin.H{
+				"id":    user.ID,
+				"name":  user.Name,
+				"image": user.HeadPortrait,
+			},
+			"touser": gin.H{
+				"image": touser.HeadPortrait,
+				"name":  touser.Name,
+				"id":    touser.ID,
+			},
+			"create_time": comment.CreatedAt,
+		})
 	}
 
 	// 查询用户信息
@@ -123,8 +172,9 @@ func GetChildrenComment(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, res.Ok(gin.H{
-		"comments": comments,
-		"users":    users,
+		"comments":        comments,
+		"users":           users,
+		"childrenComment": childrenComment,
 	}))
 }
 
@@ -145,9 +195,17 @@ func DeleteComment(ctx *gin.Context) {
 }
 
 func AddComment(ctx *gin.Context) {
+	// 获得当前的用户对象
+	value, exists := ctx.Get("current_user")
+	if !exists {
+		ctx.JSON(200, res.FormatError("评论失败,请先登录!"))
+		return
+	}
+	user := value.(*userdao.User)
 	// 获取文章的评论
 	var comment pkminfodao.ArticleComment
 	err := ctx.ShouldBindJSON(&comment)
+	comment.UserId = user.ID
 	if err != nil {
 		ctx.JSON(200, res.FormatError("获取评论失败,格式错误!"))
 		return
@@ -166,10 +224,7 @@ func LikeArticle(ctx *gin.Context) {
 	// 获取当前空间的用户LikeArticle
 	value, exists := ctx.Get("current_user")
 	if !exists {
-		ctx.JSON(500, gin.H{
-			"code": 0,
-			"msg":  "点赞失败,你还未登录,没有点赞的权限!",
-		})
+		ctx.JSON(200, res.FormatError("点赞失败,请先登录!"))
 		return
 	}
 	user := value.(*userdao.User)
@@ -179,7 +234,7 @@ func LikeArticle(ctx *gin.Context) {
 	// 将stringid强转为uid类型
 	u, err := comm.ParseUint(id)
 	if err != nil {
-		ctx.JSON(500, res.FormatError("点赞失败,格式错误!"))
+		ctx.JSON(200, res.FormatError("点赞失败,格式错误!"))
 		return
 	}
 
@@ -188,7 +243,7 @@ func LikeArticle(ctx *gin.Context) {
 	// 强转为int类型
 	typeint, err := strconv.Atoi(typestr)
 	if err != nil {
-		ctx.JSON(500, res.FormatError("点赞失败,格式错误!"))
+		ctx.JSON(200, res.FormatError("点赞失败,格式错误!"))
 	}
 
 	// 调用dao层的方法
@@ -197,6 +252,48 @@ func LikeArticle(ctx *gin.Context) {
 		Type:      typeint,
 		ArticleId: u,
 	})
+	if err != nil {
+		ctx.JSON(200, res.FormatError("点赞失败,格式错误!"))
+		return
+	}
+	ctx.JSON(200, res.Ok("点赞成功!"))
+}
+
+// 取消该收藏信息
+func UnLikeArticle(ctx *gin.Context) {
+	// 获取当前空间的用户LikeArticle
+	value, exists := ctx.Get("current_user")
+	if !exists {
+		ctx.JSON(200, res.FormatError("取消点赞失败,请先登录!"))
+		return
+	}
+	user := value.(*userdao.User)
+	// 获取路径中文章的id
+	id := ctx.Param("id")
+	// 将stringid强转为uid类型
+	u, err := comm.ParseUint(id)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("取消失败,格式错误!"))
+		return
+	}
+	// 获取该条消息是什么类型
+	typestr := ctx.Param("type")
+	// 强转为int类型
+	typeint, err := strconv.Atoi(typestr)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("取消操作失败,格式错误!"))
+	}
+	// 调用dao层的方法
+	err = am.DeleteLikeOrCollect(&pkminfodao.ArticleLike{
+		UserId:    user.ID,
+		Type:      typeint,
+		ArticleId: u,
+	})
+	if err != nil {
+		ctx.JSON(200, res.FormatError("取消失败,格式错误!"))
+		return
+	}
+	ctx.JSON(200, res.Ok("取消成功!"))
 }
 
 func AddArticle(ctx *gin.Context) {
@@ -300,4 +397,48 @@ func UpdateArticle(ctx *gin.Context) {
 		"code": 1,
 		"msg":  "修改文章成功",
 	})
+}
+
+// 判断当前用户是否收藏过该文章
+func IsCollectArticle(ctx *gin.Context) {
+	s := ctx.Param("id")
+	// 将stringid强转为uid类型
+	articleId, err := comm.ParseUint(s)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("查询收藏失败,格式错误!"))
+		return
+	}
+
+	// 获取当前用户
+	value, exists := ctx.Get("current_user")
+	if !exists {
+		ctx.JSON(200, res.FormatError("查询收藏失败,你还未登录,没有查询收藏的权限!"))
+		return
+	}
+	user := value.(*userdao.User)
+
+	// 查询数据库里面是否有该条数据,0的话是点赞，1是收藏
+	am.IsCollect(user.ID,articleId,0)
+
+}
+// 判断当前用户是否点赞过该文章
+func IsLikeArticle(ctx *gin.Context) {
+	s := ctx.Param("id")
+	// 将stringid强转为uid类型
+	articleId, err := comm.ParseUint(s)
+	if err != nil {
+		ctx.JSON(200, res.FormatError("查询收藏失败,格式错误!"))
+		return
+	}
+
+	// 获取当前用户
+	value, exists := ctx.Get("current_user")
+	if !exists {
+		ctx.JSON(200, res.FormatError("查询收藏失败,你还未登录,没有查询收藏的权限!"))
+		return
+	}
+	user := value.(*userdao.User)
+
+	// 查询数据库里面是否有该条数据,0的话是点赞，1是收藏
+	am.IsCollect(user.ID,articleId,1)
 }
