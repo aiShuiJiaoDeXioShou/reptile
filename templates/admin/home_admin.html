@@ -89,7 +89,7 @@
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="updateDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="updateDialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="okAddOrUpdate">确 定</el-button>
             </span>
 
         </el-dialog>
@@ -115,7 +115,8 @@
                     description: '',
                 },
                 isadd: false,
-                flush: 'el-icon-refresh-left'
+                flush: 'el-icon-refresh-left',
+                ok: false
             }
         },
         methods: {
@@ -157,27 +158,33 @@
                 this.hot = {};
             },
             handleClose() {
-                if (!this.isadd) {
-                    $.ajax({
-                        url: "/admin/homepage/",
-                        method: "POST",
-                        contentType: "application/json",
-                        dataType: 'json',
-                        data: JSON.stringify(home_admin.hot)
-                    }).then((data) => {
-
-                        if (data.code == 200) {
-                            home_admin.getData(home_admin.page);
-                        }
-                    }).fail((data) => {
-                        console.log(home_admin.hot);
-                    })
-                } else {
-                    this.updateHot(this.hot);
+                if(this.ok) {
+                    if (!this.isadd) {
+                        $.ajax({
+                            url: "/admin/homepage/",
+                            method: "POST",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            data: JSON.stringify(home_admin.hot)
+                        }).then((data) => {
+                            if (data.code == 200) {
+                                home_admin.getData(home_admin.page);
+                            }
+                        }).fail((data) => {
+                            console.log(home_admin.hot);
+                        })
+                    } else {
+                        this.updateHot(this.hot);
+                    }
                 }
+                this.ok = false;
             },
             handleSelect(key, keyPath) {
 
+            },
+            okAddOrUpdate() {
+                this.ok = true;
+                this.updateDialogVisible = false
             },
             pageSizeChange(page) {
                 console.log(page);

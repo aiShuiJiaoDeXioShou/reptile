@@ -8,6 +8,7 @@ import (
 	"reptile/service/articleservice"
 	"reptile/service/pkemonservice"
 	"reptile/service/team"
+	"reptile/service/tribe"
 	"reptile/service/userservice"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,7 @@ func StartData(router *gin.Engine) {
 	articleservice.StartArticleService(router)
 	pkemonservice.NewPokemonWikiHomeService(router)
 	pkemonservice.StartPkmonService(router)
+	tribe.NewTribeService(router).StartTribeService()
 	upload(router)
 }
 

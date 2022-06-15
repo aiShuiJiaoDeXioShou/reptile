@@ -72,6 +72,16 @@ type (
 		JurId  uint `json:"jur_id" form:"jur_id" query:"jur_id"`
 		RoleId uint `json:"role_id" form:"role_id" query:"role_id"`
 	}
+
+	// 好友关注表
+	Friend struct {
+		gorm.Model
+		SelfID      uint   `json:"self_id" form:"self_id" query:"self_id"`
+		FriendID    uint   `json:"friend_id" form:"friend_id" query:"friend_id"`
+		SelfName    string `json:"self_name" form:"self_name" query:"self_name"`
+		FriendName  string `json:"friend_name" form:"friend_name" query:"friend_name"`
+		FriendImage string `json:"friend_image" form:"friend_image" query:"friend_image"`
+	}
 )
 
 // CreateUser 创建一个用户对象

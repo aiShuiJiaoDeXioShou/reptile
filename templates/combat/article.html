@@ -374,14 +374,10 @@
         mounted() {
             this.article_id = document.querySelector("#archive_id").value;
             axios.get("/article/collect/"+ this.article_id).then(res=>{
-                if(res.data.code == 200){
-                    this.iscollection = true;
-                }
+                this.iscollection = true;
             })
             axios.get("/article/like/"+ this.article_id).then(res=>{
-                if(res.data.code == 200){
-                    this.iscollection = true;
-                }
+                this.islik = true;
             })
         },
         components: {

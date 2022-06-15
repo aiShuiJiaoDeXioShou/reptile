@@ -24,15 +24,17 @@ type (
 
 	// HotObjectType 这个是HotObjectType的枚举
 	hotObjectType struct {
-		POKEMON  string `json:"pokemon" yaml:"pokemon" form:"pokemon" query:"pokemon"`
-		ARTICLE  string `json:"article" yaml:"article" form:"article" query:"article"`
-		USER     string `json:"user" yaml:"user" form:"user" query:"user"`
-		TITLE    string `json:"title" yaml:"title" form:"title" query:"title"`
-		ACTIVITY string `json:"activity" yaml:"activity" form:"activity" query:"activity"`
-		BOOK     string `json:"book" yaml:"book" form:"book" query:"book"`
-		MUSIC    string `json:"music" yaml:"music" form:"music" query:"music"`
-		NEWS     string `json:"news" yaml:"news" form:"news" query:"news"`
-		AROUND   string `json:"around" yaml:"around" form:"around" query:"around"`
+		POKEMON   string `json:"pokemon" yaml:"pokemon" form:"pokemon" query:"pokemon"`
+		ARTICLE   string `json:"article" yaml:"article" form:"article" query:"article"`
+		USER      string `json:"user" yaml:"user" form:"user" query:"user"`
+		TITLE     string `json:"title" yaml:"title" form:"title" query:"title"`
+		ACTIVITY  string `json:"activity" yaml:"activity" form:"activity" query:"activity"`
+		BOOK      string `json:"book" yaml:"book" form:"book" query:"book"`
+		MUSIC     string `json:"music" yaml:"music" form:"music" query:"music"`
+		NEWS      string `json:"news" yaml:"news" form:"news" query:"news"`
+		AROUND    string `json:"around" yaml:"around" form:"around" query:"around"`
+		HOT       string `json:"hot" yaml:"hot" form:"hot" query:"hot"`
+		RECOMMEND string `json:"recommend" yaml:"recommend" form:"recommend" query:"recommend"`
 	}
 )
 
@@ -47,6 +49,8 @@ const (
 	local_MUSIC    = "music"
 	local_NEWS     = "news"
 	local_AROUND   = "around"
+	HOT            = "hot"
+	RECOMMEND      = "recommend"
 )
 
 var (
@@ -60,6 +64,8 @@ var (
 		local_MUSIC,
 		local_NEWS,
 		local_AROUND,
+		HOT,
+		RECOMMEND,
 	}
 )
 
