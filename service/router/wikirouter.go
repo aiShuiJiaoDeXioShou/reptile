@@ -6,11 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (myrouter *MyRouter)newWikiRouter(router *gin.Engine){
+func (myrouter *MyRouter) newWikiRouter(router *gin.Engine) {
 	wiki := router.Group("/wiki")
 	wiki.GET("/index", myrouter.WikiheadRouter)
 	wiki.GET("/detail", myrouter.WikiDetailRouter)
 	wiki.GET("/atlas", myrouter.WikiAtlasRouter)
+	wiki.GET("/atlaslist", myrouter.WikiAtlasListRouter)
 }
 
 // 跳转到维基页面 ps：这个是首页来着
@@ -28,8 +29,14 @@ func (myrouter *MyRouter) WikiDetailRouter(c *gin.Context) {
 }
 
 // 全国图鉴
-func (myrouter *MyRouter) WikiAtlasRouter(c *gin.Context){
+func (myrouter *MyRouter) WikiAtlasRouter(c *gin.Context) {
 	c.HTML(http.StatusOK, "wikifirst/atlas.html", gin.H{
+		"title": "Wikihead",
+	})
+}
+
+func (myrouter *MyRouter) WikiAtlasListRouter(c *gin.Context) {
+	c.HTML(http.StatusOK, "wikifirst/atlaslist.html", gin.H{
 		"title": "Wikihead",
 	})
 }

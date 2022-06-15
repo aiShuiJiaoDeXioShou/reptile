@@ -19,6 +19,7 @@ func StartData(router *gin.Engine) {
 	userservice.UserSerice(router)
 	articleservice.StartArticleService(router)
 	pkemonservice.NewPokemonWikiHomeService(router)
+	pkemonservice.StartPkmonService(router)
 	upload(router)
 }
 

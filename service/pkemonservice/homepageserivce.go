@@ -10,10 +10,6 @@ import (
 	"strconv"
 )
 
-var (
-	pki *pkminfodao.PkmDaoManger
-)
-
 // NewPokemonWikiHomeService 初始化宝可梦首页服务
 func NewPokemonWikiHomeService(router *gin.Engine) {
 	pki = pkminfodao.NewPkmDaoManger()
@@ -118,13 +114,13 @@ func ShowHomePageLeftData(ctx *gin.Context) {
 	news, err := pkmhot.QueryByType(pkmhot.HotType.NEWS)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(500, res.Error("没有找到近日资讯的数据"))
+		ctx.JSON(200, res.Error("没有找到近日资讯的数据"))
 	}
 	// 周边信息
 	around, err := pkmhot.QueryByType(pkmhot.HotType.AROUND)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(500, res.Fail("没有找到周边信息,你是不是忘记存库了"))
+		ctx.JSON(200, res.Fail("没有找到周边信息,你是不是忘记存库了"))
 		return
 	}
 	// 没有错误的话,就返回数据
@@ -139,13 +135,13 @@ func AddHotObject(context *gin.Context) {
 	err := context.ShouldBindJSON(&hot)
 	if err != nil {
 		log.Println(err)
-		context.JSON(400, res.Fail("数据绑定失败，请检查数据格式"))
+		context.JSON(200, res.Fail("数据绑定失败，请检查数据格式"))
 		return
 	}
 	err = pkmhot.Insert(&hot)
 	if err != nil {
 		log.Println(err)
-		context.JSON(500, res.Fail("添加失败"))
+		context.JSON(200, res.Fail("添加失败"))
 		return
 	}
 	context.JSON(200, res.Ok("添加成功"))
@@ -156,7 +152,7 @@ func DeleteHotObject(context *gin.Context) {
 	err := pkmhot.Delete(id)
 	if err != nil {
 		log.Println(err)
-		context.JSON(500, res.Fail("删除失败"))
+		context.JSON(200, res.Fail("删除失败"))
 		return
 	}
 	context.JSON(200, res.Ok("删除成功"))
@@ -168,13 +164,13 @@ func UpdateHotObject(context *gin.Context) {
 	err := context.BindJSON(&hot)
 	if err != nil {
 		log.Println(err)
-		context.JSON(400, res.Fail("数据绑定失败，请检查数据格式"))
+		context.JSON(200, res.Fail("数据绑定失败，请检查数据格式"))
 		return
 	}
 	err = pkmhot.Update(&hot)
 	if err != nil {
 		log.Println(err)
-		context.JSON(500, res.Fail("更新失败"))
+		context.JSON(200, res.Fail("更新失败"))
 		return
 	}
 	context.JSON(200, res.Ok("更新成功"))
@@ -186,7 +182,7 @@ func UpdateHotObjectTime(context *gin.Context) {
 	err := pkmhot.UpdateTime()
 	if err != nil {
 		log.Println(err)
-		context.JSON(500, res.Fail("更新时间失败"))
+		context.JSON(200, res.Fail("更新时间失败"))
 		return
 	}
 	context.JSON(200, res.Ok("更新时间成功"))

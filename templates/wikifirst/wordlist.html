@@ -1,0 +1,100 @@
+{{define "wikifirst/wordlist.html"}}
+{{template "base"}}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiKi阅读页面</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="/static/mycss/body/model.css">
+    <style>
+        .pkm-data-menu {
+            height: 700px;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<div id="read-root" class="read-root">
+    <el-row>
+        <el-col :span="4">
+            <div class="pkm-data-menu">
+                <el-menu default-active="1" class="el-menu-vertical-demo" @open="seek" @close="close"
+                    @select="selectPkm" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+                        <el-submenu :index="''+index">
+                            <template slot="title">
+
+                            </template>
+                            <el-menu-item-group>
+                                <div v-for="(pkminfo, pkmindex) in pkmarr[index]" :key="pkmindex">
+                                    <el-menu-item :index="''+index+'-'+pkmindex">
+                                        <span v-text="pkminfo.name"></span>
+                                    </el-menu-item>
+                                </div>
+                            </el-menu-item-group>
+                        </el-submenu>
+                </el-menu>
+            </div>
+        </el-col>
+
+        <el-col :span="16">
+            <iframe src="/article/3" frameborder="0"></iframe>
+        </el-col>
+    </el-row>
+
+</div>
+<!-- 发送ajax请求，寻找相关的数据 -->
+<script src="/static/js/axios.js"></script>
+<!-- 引入图表库 -->
+<script src="/static/js/chart.js"></script>
+
+<script>
+    const read_root = new Vue({
+        el: '#read-root',
+        data() {
+            return {
+                pkmarr: {},
+                showpkom: {},
+                sex: 0,
+                loading:false
+            }
+        },
+        methods: {
+            handleChange(val) {
+                console.log(val);
+            },
+            seek(index) {
+                if (this.pkmarr.length > 0) {
+                    if (this.pkmarr[index]) {
+                        return
+                    }
+                }
+                
+                this.loading = true
+                axios.get("http://localhost:4001/pkm/g/" + (Number(index) + 1)).then(res => {
+                    if (res.data.code == 200) {
+                        this.pkmarr[index]=res.data.data
+                        this.loading = false
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+                return
+            },
+            selectPkm(index) {
+                // 根据-根据-将index分割
+                let indexarr = index.split('-');
+                // 获取第几世代
+                let generation = this.pkmarr[Number(indexarr[0])];
+                // 获取当前选择的pkm
+                let pkm = generation[Number(indexarr[1])];
+                this.showpkom = pkm;
+                this.chart();
+                console.log(this.showpkom);
+            },
+            close(index) {
+                
+            }
+        },
+    })
+</script>
+{{end}}

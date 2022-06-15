@@ -187,9 +187,9 @@ func (am *ArticleManager) DeleteLikeOrCollect(like *ArticleLike) (err error) {
 }
 
 // 判断当前用户是否收藏过该文章
-func (am *ArticleManager) IsCollect(userId,articleId uint,typestr int ) (isCollect bool, err error) {
+func (am *ArticleManager) IsCollect(userId, articleId uint, typestr int) (isCollect bool, err error) {
 	var collect ArticleLike
-	err = am.Dao.Where("user_id = ? and article_id = ? and type = ?", userId, articleId,typestr).First(&collect).Error
+	err = am.Dao.Where("user_id = ? and article_id = ? and type = ?", userId, articleId, typestr).First(&collect).Error
 	if err != nil {
 		isCollect = true
 	}

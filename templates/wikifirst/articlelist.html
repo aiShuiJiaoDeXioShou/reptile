@@ -1,0 +1,276 @@
+{{define "wikifirst/atlaslist.html"}}
+{{template "base"}}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiKi阅读页面</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="/static/mycss/body/model.css">
+    <style>
+        .pkm-data-menu {
+            height: 700px;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<div id="read-root" class="read-root">
+    <el-row>
+        <el-col :span="4">
+            <div class="pkm-data-menu">
+                <el-menu default-active="1" class="el-menu-vertical-demo" @open="seek" @close="close"
+                    @select="selectPkm" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+                    <div v-for="(item, index) in 8" :key="index">
+                        <el-submenu :index="''+index">
+                            <template slot="title">
+                                <svg t="1655261538665" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" p-id="2730" width="16" height="16">
+                                    <path
+                                        d="M512 1002.666667C241.450667 1002.666667 21.333333 782.549333 21.333333 512S241.450667 21.333333 512 21.333333 1002.666667 241.450667 1002.666667 512 782.549333 1002.666667 512 1002.666667z m0-938.666667C264.96 64 64 264.96 64 512S264.96 960 512 960 960 759.04 960 512 759.04 64 512 64z"
+                                        p-id="2731"></path>
+                                    <path
+                                        d="M512 704c-105.856 0-192-86.144-192-192S406.144 320 512 320s192 86.144 192 192-86.144 192-192 192z m0-341.333333c-82.346667 0-149.333333 66.986667-149.333333 149.333333s66.986667 149.333333 149.333333 149.333333 149.333333-66.986667 149.333333-149.333333-66.986667-149.333333-149.333333-149.333333z"
+                                        p-id="2732"></path>
+                                    <path
+                                        d="M341.333333 533.333333H42.666667a21.333333 21.333333 0 0 1 0-42.666666h298.666666a21.333333 21.333333 0 0 1 0 42.666666zM981.333333 533.333333h-298.666666a21.333333 21.333333 0 0 1 0-42.666666h298.666666a21.333333 21.333333 0 0 1 0 42.666666zM512 618.666667c-58.794667 0-106.666667-47.872-106.666667-106.666667s47.872-106.666667 106.666667-106.666667 106.666667 47.872 106.666667 106.666667-47.872 106.666667-106.666667 106.666667z m0-170.666667c-35.285333 0-64 28.714667-64 64s28.714667 64 64 64 64-28.714667 64-64-28.714667-64-64-64z"
+                                        p-id="2733"></path>
+                                </svg>
+                                <span v-text="'第'+(index+1)+'世代'"></span>
+                            </template>
+                            <el-menu-item-group>
+                                <div v-for="(pkminfo, pkmindex) in pkmarr[index]" :key="pkmindex">
+                                    <el-menu-item :index="''+index+'-'+pkmindex">
+                                        <span v-text="pkminfo.name"></span>
+                                    </el-menu-item>
+                                </div>
+                            </el-menu-item-group>
+                        </el-submenu>
+                    </div>
+                </el-menu>
+            </div>
+        </el-col>
+
+        <el-col :span="16">
+            <div v-loading="loading" class="model-recommend">
+                <div class="pkm-title" v-text="showpkom.name"></div>
+                <!-- 这个是介绍宝可梦实际内容的地方 -->
+                <div class="bkm-bg-content">
+
+                    <!-- 用于放置宝可梦的图表信息 -->
+                    <div class="bkm-chart">
+
+                        <!-- 这个盒子用于存放宝可梦的肖像 -->
+                        <div class="bkm-image-box">
+                            <el-image style="
+                                width: auto;
+                                height: 85%;
+                                display: block;
+                                border-radius: 8px;" :src="showpkom.image?showpkom.image:'/static/img/我是谁.png'"
+                                :alt="showpkom.name">
+                            </el-image>
+                            <el-button type="danger">查看图鉴全部信息</el-button>
+                        </div>
+
+                        <!-- 这里放它的图表信息,我们看见的肯定是蜘蛛图 -->
+                        <div id="container"></div>
+
+                        <!-- 下面这个是它的详细图表信息 -->
+                        <div class="bkm-chart-info">
+                            <h2>种族值</h2>
+                            攻击力:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack"></el-progress>
+                            防御力:<el-progress class="pkm-progress-bar" :percentage="showpkom.defense">
+                            </el-progress>
+                            特攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_attack">
+                            </el-progress>
+                            物攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack" status="success">
+                            </el-progress>
+                            特防:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_defense" status="warning">
+                            </el-progress>
+                            速度:<el-progress class="pkm-progress-bar" :percentage="showpkom.speed" status="exception">
+                            </el-progress>
+                        </div>
+
+                    </div>
+
+                    <!-- 这个是用文字介绍宝可梦的基础信息盒子 -->
+                    <div class="bkm-text">
+                        <!-- 介绍宝可梦的基础信息 -->
+                        <div class="attribute">
+                            <div>
+                                <h2>属性</h2>
+                                <div class="attribute-into" v-text="showpkom.property"></div>
+                            </div>
+                            <div>
+                                <h2>分类</h2>
+                                <div class="attribute-into" v-text="showpkom.category"></div>
+                            </div>
+                            <div>
+                                <h2>特性</h2>
+                                <div class="attribute-into" v-text="showpkom.ability"></div>
+                            </div>
+                        </div>
+
+                        <!-- 介绍宝可梦的详细信息 -->
+                        <div class="attribute-detailed">
+                            <div>
+                                <h2>身高</h2>
+                                <div class="attribute-into" v-text="showpkom.height"></div>
+                            </div>
+                            <div>
+                                <h2>体重</h2>
+                                <div class="attribute-into" v-text="showpkom.weight"></div>
+                            </div>
+                            <div>
+                                <h2>体型</h2>
+                                <div class="attribute-into">
+                                    <img :src="showpkom.body==''?'//media.52poke.com/wiki/thumb/c/cc/Body08.png/32px-Body08.png':showpkom.body"
+                                        alt="">
+                                </div>
+                            </div>
+                            <div>
+                                <h2>脚印</h2>
+                                <div class="attribute-into">
+                                    <img :src="showpkom.foot==''?'//media.52poke.com/wiki/2/22/F004.png':showpkom.foot"
+                                        alt="">
+                                </div>
+                            </div>
+                            <div>
+                                <h2>性别变化</h2>
+                                <el-radio-group v-model="sex">
+                                    <el-radio :label="0">公</el-radio>
+                                    <el-radio :label="1">母</el-radio>
+                                </el-radio-group>
+                            </div>
+                            <div>
+                                <h2 style="margin-top: 8px;">推荐性格</h2>
+                                <div class="attribute-into">胆小+速度</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 介绍宝可梦的攻击属性,防御属性 -->
+
+                </div>
+
+                <p class="introduce"
+                    v-text="showpkom.property?showpkom.name +','+ showpkom.property+','+showpkom.category+','+showpkom.ability:'我是谁？'">
+
+                </p>
+            </div>
+        </el-col>
+    </el-row>
+
+</div>
+<!-- 发送ajax请求，寻找相关的数据 -->
+<script src="/static/js/axios.js"></script>
+<!-- 引入图表库 -->
+<script src="/static/js/chart.js"></script>
+
+<script>
+    const read_root = new Vue({
+        el: '#read-root',
+        data() {
+            return {
+                pkmarr: {},
+                showpkom: {
+                    name: '我是谁？',
+                    title: '我是谁？'
+                },
+                sex: 0,
+                loading:false
+            }
+        },
+        methods: {
+            handleChange(val) {
+                console.log(val);
+            },
+            seek(index) {
+                if (this.pkmarr.length > 0) {
+                    if (this.pkmarr[index]) {
+                        return
+                    }
+                }
+                
+                this.loading = true
+                axios.get("http://localhost:4001/pkm/g/" + (Number(index) + 1)).then(res => {
+                    if (res.data.code == 200) {
+                        this.pkmarr[index]=res.data.data
+                        this.loading = false
+                    } else {
+                        this.$message.error(res.data.msg);
+                    }
+                })
+                return
+            },
+            selectPkm(index) {
+                // 根据-根据-将index分割
+                let indexarr = index.split('-');
+                // 获取第几世代
+                let generation = this.pkmarr[Number(indexarr[0])];
+                // 获取当前选择的pkm
+                let pkm = generation[Number(indexarr[1])];
+                this.showpkom = pkm;
+                this.chart();
+                console.log(this.showpkom);
+            },
+            chart() {
+                var dom = document.getElementById('container');
+                var myChart = echarts.init(dom, 'light', {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+                var app = {};
+
+                var option;
+
+                option = {
+                    radar: {
+                        // shape: 'circle',
+                        indicator: [{
+                                name: '攻击力',
+                                max: 200
+                            },
+                            {
+                                name: '防御力',
+                                max: 200
+                            },
+                            {
+                                name: '特攻',
+                                max: 200
+                            },
+                            {
+                                name: '特防',
+                                max: 200
+                            },
+                            {
+                                name: '速度',
+                                max: 200
+                            },
+                        ]
+                    },
+                    series: [{
+                        name: 'Budget vs spending',
+                        type: 'radar',
+                        data: [{
+                            value: [this.showpkom.attack, this.showpkom.defense, this
+                                .showpkom.sp_attack, this.showpkom.sp_defense, this
+                                .showpkom.speed
+                            ],
+                            name: 'Allocated Budget'
+                        }]
+                    }]
+                };
+
+                if (option && typeof option === 'object') {
+                    myChart.setOption(option);
+                }
+
+                window.addEventListener('resize', myChart.resize);
+            },
+            close(index) {
+                
+            }
+        },
+    })
+</script>
+{{end}}

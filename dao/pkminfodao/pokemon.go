@@ -1,6 +1,7 @@
 package pkminfodao
 
 import (
+	"errors"
 	"log"
 	"reptile/dao"
 
@@ -114,10 +115,10 @@ func (p *PkmDaoManger) FindPkmByIds(ids []uint) *[]Pokemon {
 }
 
 // 根据名称查询一条数据
-func (p *PkmDaoManger) FindPkmByNameLike(name string) *[]Pokemon {
+func (p *PkmDaoManger) FindPkmByNameLike(name string) (*[]Pokemon, error) {
 	var pkm []Pokemon
-	p.db.Where("name like ?", "%"+name+"%").Find(&pkm)
-	return &pkm
+	err := p.db.Where("name like ?", "%"+name+"%").Find(&pkm).Error
+	return &pkm, err
 }
 
 // 拿到这个表所有的数据
@@ -133,4 +134,39 @@ func (p *PkmDaoManger) FindAllPkm() *[]Pokemon {
 // 更新数据库里面的image数据
 func (p *PkmDaoManger) UpdatePkmImage(id uint, image string) {
 	p.db.Model(&Pokemon{}).Where("id = ?", id).Update("image", image)
+}
+
+// 根据世代拿到宝可梦的信息
+func (p *PkmDaoManger) FindPkmByGeneration(generation int) (pkm []Pokemon, err error) {
+	if generation == 0 {
+		err = p.db.Order("number asc").Find(&pkm).Error
+		return
+	} else if generation == 1 {
+		// 根据number排序字段显示前151条数据
+		err = p.db.Order("number asc").Limit(151).Find(&pkm).Error
+		return
+	} else if generation == 2 {
+		// 根据number排序字段显示前151..251条数据
+		err = p.db.Order("number asc").Offset(151).Limit(251 - 151).Find(&pkm).Error
+		return
+	} else if generation == 3 {
+		err = p.db.Order("number asc").Offset(251).Limit(386 - 251).Find(&pkm).Error
+		return
+	} else if generation == 4 {
+		err = p.db.Order("number asc").Offset(386).Limit(494 - 386).Find(&pkm).Error
+		return
+	} else if generation == 5 {
+		err = p.db.Order("number asc").Offset(494).Limit(649 - 494).Find(&pkm).Error
+		return
+	} else if generation == 6 {
+		err = p.db.Order("number asc").Offset(649).Limit(721 - 649).Find(&pkm).Error
+		return
+	} else if generation == 7 {
+		err = p.db.Order("number asc").Offset(721).Limit(809 - 721).Find(&pkm).Error
+		return
+	} else if generation == 8 {
+		err = p.db.Order("number asc").Offset(809).Limit(905 - 809).Find(&pkm).Error
+		return
+	}
+	return nil, errors.New("没有这个世代")
 }

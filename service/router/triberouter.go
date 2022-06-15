@@ -21,8 +21,26 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 	rg.Use(usermiddleware.UserLoginJudgeMiddleware)
 
 	rg.GET("/", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "tribe/index.html", gin.H{
+		ctx.HTML(http.StatusOK, "tribe/tribehome.html", gin.H{
 			"title": "部落",
+		})
+	})
+
+	rg.GET("/recommend", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "tribe/recommend.html", gin.H{
+			"title": "推荐",
+		})
+	})
+
+	rg.GET("/hotlist", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "tribe/hotlist.html", gin.H{
+			"title": "热榜",
+		})
+	})
+
+	rg.GET("/follow", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "tribe/follow.html", gin.H{
+			"title": "关注",
 		})
 	})
 
@@ -69,7 +87,7 @@ func (myrouter *MyRouter) NewTribeRouter(router *gin.Engine) {
 		comments, err := am.FindArticleById(uint(idUint))
 		if err != nil {
 			log.Println("根据id从数据库获取文章失败", err)
-			ctx.HTML(201, "tribe/index.html", gin.H{
+			ctx.HTML(200, "tribe/index.html", gin.H{
 				"title": "显示文章失败",
 			})
 			return

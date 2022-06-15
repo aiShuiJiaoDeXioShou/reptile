@@ -1,0 +1,98 @@
+{{define "tribe/hotlist.html"}}
+{{template "base"}}
+<div id="hotlist">
+    <h1>热门推荐</h1>
+    <ul class="hot">
+        <li v-for="(item,index) in 20" :key="index">
+            <i class="hot-icon">No.1</i>
+            <div class="hot-image">
+                <a href="">
+                    <img src="/static/img/妙蛙种子官方图.png" alt="">
+                </a>
+            </div>
+
+            <div class="hot-content">
+                <h3>介绍：震惊又一次赢麻了</h3>
+                <p>
+                    士大夫精神的时代精神的房间无论发生的封建时代离开房间圣诞快乐附件是的离开就
+                </p>
+            </div>
+        </li>
+    </ul>
+
+</div>
+<script>
+    new Vue({
+        el: "#hotlist",
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+
+        }
+    })
+</script>
+
+<style>
+    #hotlist *{
+        padding: 0;
+        margin: 0;
+    }
+    #hotlist {
+        padding: 30px 0 0 30px;
+    }
+    #hotlist a{
+        text-decoration: none;
+        color: #0a0a0a;
+    }
+    #hotlist .hot{
+        display: flex;
+        flex-direction: row;
+        flex-flow: wrap;
+    }
+    #hotlist .hot li{
+        list-style: none;
+        text-decoration: none;
+        padding: 20px;
+        display: flex;
+        max-height: 300%;
+        max-width: 300px;
+        position: relative;
+        border-radius: 7px;
+        background: #595959;
+        box-shadow: 5px 5px 10px #505050, -5px -5px 10px #626262;
+        margin:0 20px 20px 0;
+        cursor: pointer;
+    }
+    #hotlist .hot li .hot-image{
+        flex: 0.3;
+
+    }
+    #hotlist .hot li .hot-image img{
+        width: 100%;
+        height: auto;
+    }
+    #hotlist .hot li .hot-content{
+        flex: 0.7;
+        padding-left: 15px;
+    }
+    #hotlist h1 {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 1em;
+        border-left: 10px solid #a0d911;
+    }
+    #hotlist .hot-icon{
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        backdrop-color:red ;
+        color: #fffffc;
+        min-width: 20px;
+        min-height: 20px;
+        border-radius: 10%;
+    }
+</style>
+{{end}}
