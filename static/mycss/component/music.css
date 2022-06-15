@@ -81,6 +81,7 @@ body {
   box-shadow: 0 2px 6px 1px #0000001f;
   transition: height var(--cubic-header), box-shadow var(--duration),
     padding var(--duration) ease-in-out;
+
 }
 
 .player__header.open-header {

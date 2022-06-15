@@ -76,11 +76,9 @@
                             width: auto;
                             height: 85%;
                             display: block;
-                            border-radius: 8px;"
-                                :src="showpkom.image"
-                                :alt="showpkom.name">
+                            border-radius: 8px;" :src="showpkom.image" :alt="showpkom.name">
                             </el-image>
-                                <el-button type="danger">查看图鉴全部信息</el-button>
+                            <el-button type="danger">查看图鉴全部信息</el-button>
                         </div>
 
                         <!-- 这里放它的图表信息,我们看见的肯定是蜘蛛图 -->
@@ -173,10 +171,10 @@
         </el-col>
     </el-row>
 
-    <!-- 这个是新闻推荐模块，放置一些惊悚的新闻，或者对战信息 -->
+    <!-- 音乐模块 -->
     <div class="model-4">
-        <div class="model-news">
-            <h2 class="pkm-title">音乐</h2>
+        <div class="model-music">
+            <h2 class="pkm-title music-title">音乐</h2>
             {{template "component/music.html"}}
         </div>
     </div>
@@ -186,10 +184,24 @@
     <div class="model-2">
         <div class="model-history">
             <h2 class="pkm-title">历史</h2>
-            {{template "component/scroll_box"}}
+            <div class="music-component">
+                {{template "component/scroll_box"}}
+            </div>
         </div>
     </div>
-    <!-- 这个是新闻推荐模块，放置一些惊悚的新闻，或者对战信息 -->
+
+    <style>
+        h2.pkm-title.music-title {
+            margin: 20px 0px;
+        }
+        .music-component{
+            margin:0 auto;
+        }
+        .player{
+            margin:0 auto;
+        }
+    </style>
+
     <div class="model-3">
 
         <div class="model-news">
@@ -264,7 +276,10 @@
                         name: 'Budget vs spending',
                         type: 'radar',
                         data: [{
-                            value: [this.showpkom.attack, this.showpkom.defense, this.showpkom.sp_attack, this.showpkom.sp_defense, this.showpkom.speed],
+                            value: [this.showpkom.attack, this.showpkom.defense, this
+                                .showpkom.sp_attack, this.showpkom.sp_defense, this
+                                .showpkom.speed
+                            ],
                             name: 'Allocated Budget'
                         }]
                     }]
