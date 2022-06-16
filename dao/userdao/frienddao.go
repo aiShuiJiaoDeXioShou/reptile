@@ -19,7 +19,7 @@ func Unfollow(selfid uint, id string) error {
 }
 
 // 查询是否关注了某人
-func IsFollow(selfID, friendID uint) (bool, error) {
+func IsFollow(selfID uint ,friendID string) (bool, error) {
 	var friend Friend
 	err := dao.Where("user_id = ? and friend_id = ?", selfID, friendID).First(&friend).Error
 	if err != nil {

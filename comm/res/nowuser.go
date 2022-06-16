@@ -1,4 +1,4 @@
-package comm
+package res
 
 import (
 	"github.com/gin-gonic/gin"

@@ -3,38 +3,49 @@
 <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 <div id="usersettingapp">
     <div>
-        <el-divider><div v-text="user.name+' 的个人基本信息'"></div></el-divider>
-        <el-form v-loading="loading" ref="user" :model="user" label-width="80px">
-            <el-form-item label="用户名">
-                <el-input class="label-input" v-model="user.name" placeholder="亲！取一个好听的名字哦~"></el-input>
-            </el-form-item>
-            <el-form-item label="密码">
-                <el-input class="label-input" type="password" v-model="user.password" placeholder="亲！保护您的安全就是我们的信仰"></el-input>
-            </el-form-item>
-            <el-form-item label="签名">
-                <el-input class="label-input" v-model="user.motto" placeholder="亲！写下您的个性签名吧~"></el-input>
-            </el-form-item>
-            <el-form-item label="手机号">
-                <el-input class="label-input" v-model="user.phone" placeholder="亲！您的手机号码是我们的联系方式哦~"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱">
-                <el-input class="label-input" v-model="user.email" placeholder="亲！您的邮箱是我们的联系方式哦~"></el-input>
-            </el-form-item>
-            <!-- 这个是用户的性别 -->
-            <el-form-item >
-                <el-radio-group v-model="user.sex">
-                    <el-radio :label="1">男生</el-radio>
-                    <el-radio :label="2">女生</el-radio>
-                    <el-radio :label="0">保密</el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item size="large">
-                <el-button type="primary" @click="onSubmit">保存</el-button>
-              </el-form-item>
-              <el-form-item size="large">
-                <el-button type="primary" @click="exit">退出登入</el-button>
-              </el-form-item>
-        </el-form>
+        <el-divider>
+            <div v-text="user.name+' 的个人基本信息'"></div>
+        </el-divider>
+        <div class="user_info">
+            <el-form v-loading="loading" ref="user" :model="user" label-width="80px">
+                <el-form-item label="用户名">
+                    <el-input class="label-input" v-model="user.name" placeholder="亲！取一个好听的名字哦~"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input class="label-input" type="password" v-model="user.password" placeholder="亲！保护您的安全就是我们的信仰">
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="签名">
+                    <el-input class="label-input" v-model="user.motto" placeholder="亲！写下您的个性签名吧~"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号">
+                    <el-input class="label-input" v-model="user.phone" placeholder="亲！您的手机号码是我们的联系方式哦~"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱">
+                    <el-input class="label-input" v-model="user.email" placeholder="亲！您的邮箱是我们的联系方式哦~"></el-input>
+                </el-form-item>
+                <!-- 这个是用户的性别 -->
+                <el-form-item>
+                    <el-radio-group v-model="user.sex">
+                        <el-radio :label="1">男生</el-radio>
+                        <el-radio :label="2">女生</el-radio>
+                        <el-radio :label="0">保密</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item size="large">
+                    <el-button type="primary" @click="onSubmit">保存</el-button>
+                    <el-button type="danger" @click="exit">退出登入</el-button>
+                </el-form-item>
+            </el-form>
+            <div class="user_head">
+                <h2>修改头像信息</h2>
+                <el-upload class="avatar-uploader" action="/userheader/upload" :show-file-list="false"
+                    :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+            </div>
+        </div>
     </div>
 </div>
 <!-- 引入组件库 -->
@@ -58,32 +69,45 @@
             return {
                 user: {},
                 loading: false,
+                imageUrl: ''
             }
         },
         methods: {
-            onSubmit(){
+            handleAvatarSuccess(res, file) {
+                this.imageUrl = URL.createObjectURL(file.raw);
+            },
+            beforeAvatarUpload(file) {
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+
+                return isLt2M;
+            },
+            onSubmit() {
                 // 加载动漫
                 this.loading = true
                 ax({
                     url: "/user/",
                     method: "PUT",
                     data: JSON.stringify(this.user),
-                }).then(res=>{
+                }).then(res => {
                     this.loading = false
-                    if(res.code === 200){
+                    if (res.code === 200) {
                         this.$message({
                             message: "修改成功",
                             type: "success",
                         })
                         this.user = res.data
-                    }else{
+                    } else {
                         this.loading = false
                         this.$message({
                             message: "修改失败",
                             type: "error",
                         })
                     }
-                }).fail(res=>{
+                }).fail(res => {
                     this.loading = false
                     this.$message({
                         message: "修改失败",
@@ -91,13 +115,13 @@
                     })
                 })
             },
-            exit(){
+            exit() {
                 localStorage.removeItem("token")
                 ax({
                     url: "/user/logout",
                     method: "get",
-                }).then(res=>{
-                    if(res.code == 200){
+                }).then(res => {
+                    if (res.code == 200) {
                         this.$message({
                             message: "退出成功",
                             type: "success",
@@ -126,9 +150,44 @@
     });
 </script>
 <style>
-    .label-input{
+    .label-input {
         width: 300px;
         margin: 0 auto;
+    }
+
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
+    }
+
+    .user_info {
+        display: flex;
+
+    }
+    .user_head {
+        margin-left: 50px;
     }
 </style>
 {{end}}

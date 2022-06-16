@@ -55,7 +55,7 @@
           </el-menu-item>
 
           <el-menu-item index="8" v-if="is_admin">
-            <i class="el-icon-edit"></i>
+            <i class="el-icon-s-check"></i>
             <span slot="title">Admin</span>
           </el-menu-item>
 
@@ -113,6 +113,9 @@
           this.loading = false;
         }else if (key == 8){
           this.src = "/user/adminview"
+          this.loading = false;
+        }else if(key == 6){
+          this.src = "/user/likeadmin"
           this.loading = false;
         }
       }

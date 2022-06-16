@@ -1,10 +1,9 @@
 {{define "user/register.html"}}
+
+<link rel="stylesheet" href="/static/css/bootstrap-icons/bootstrap-icons.css">
+
 <body>
     <div class="user-login" id="user-login">
-        <!-- <audio autoplay>
-            <source src="http://s2.3lbh.com/s/87EJ97gi.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio> -->
         <div class="main-container">
             <!-- Start Pokemon Ball Top Part -->
             <div class="pokemon-top-part"></div>
@@ -20,24 +19,24 @@
                             <input type="text" name="name" v-model="user.name" placeholder="用户名称">
                         </div>
                         <div class="signup-row">
-                            <i class="fa fa-envelope-o"></i>
+                            <i class="bi bi-mailbox"></i>
                             <input type="text" name="email" v-model="user.email" placeholder="邮箱地址">
                         </div>
                         <div class="signup-row">
-                            <i class="fa fa-phone"></i>
+                            <i class="bi bi-phone"></i>
                             <input type="text" name="phone" v-model="user.phone" placeholder="电话号码">
                         </div>
                         <div class="signup-row">
-                            <i class="fa fa-key"></i>
+                            <i class="bi bi-key"></i>
                             <input type="password" name="password" v-model="user.password" placeholder="密码">
                         </div>
                         <div class="signup-row">
-                            <i class="fa fa-key"></i>
+                            <i class="bi bi-key"></i>
                             <input type="password" name="next_password" v-model="next_password" placeholder="再次确认密码">
                         </div>
                         <div class="signup-row">
                             <a @click="register">
-                                <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+                                <i class="bi bi-shift"></i>
                             </a>
                         </div>
                         <div class="form-bottom">
@@ -61,70 +60,97 @@
             <!-- End Pokemon Ball Bottom Part -->
         </div>
         <!-- End Main Container -->
-       
+
     </div>
 </body>
 
 <!-- Start Scripts -->
 <script src="/static/js/jquery-3.6.js"></script>
-<script src="https://use.fontawesome.com/7dddae9ad9.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
+<script src="/static/js/fontawesome.js"></script>
+<script src="/static/js/tweenmax.js"></script>
 <script src="/static/js/vue.js"></script>
- <!-- End Scripts -->
+<!-- End Scripts -->
 <script>
     let vue = new Vue({
-        el:'#user-login',
+        el: '#user-login',
         data() {
             return {
-                user:{
-                    name:"",
-                    email:"",
-                    phone:"",
-                    password:"",
+                user: {
+                    name: "",
+                    email: "",
+                    phone: "",
+                    password: "",
                 },
-                next_password:"",
-                error:"",
-                iserrortext:true,
+                next_password: "",
+                error: "",
+                iserrortext: true,
             }
         },
         methods: {
-            register(){
+            register() {
                 // 判断user对象各个属性不能为空
-                if(this.user.name === ""){
+                if (this.user.name === "") {
                     this.error = "用户名不能为空";
                     return
                 }
 
-                if(this.user.password === ""){
+                if (this.user.password === "") {
                     this.error = "密码不能为空";
                     return
                 }
 
-                if(this.user.phone === ""){
+                if (this.user.phone === "") {
                     this.error = "电话号码不能为空";
                     return
                 }
 
-                if(this.next_password === ""){
+                if (this.next_password === "") {
                     this.error = "确认密码不能为空";
                     return
                 }
 
                 // 验证各个属性是否符合要求
+                // 邮箱格式
+                var reg3 = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+                if (this.user.email != '') {
+                    if (!reg3.test(this.user.email)) {
+                        this.error = "邮箱格式错误";
+                        return
+                    }
+                }
+                // 密码验证
+                let reg1 = /^[a-zA-Z0-9]{6,20}$/;
+                if (!reg1.test(this.user.password)) {
+                    this.error = "密码格式错误，不能为纯数字，切不能带有任何标点符号,必须包含大小写字母";
+                    return
+                }
+                // 手机号格式
+                var reg2 = /^(13|14|15|17|18|19)[0-9]{9}/;
+                if (!reg2.test(this.user.phone)) {
+                    this.error = "手机号格式错误";
+                    return
+                }
+
+                // 判断两次密码是否一致
+                if (this.user.password !== this.next_password) {
+                    this.error = "两次密码不一致";
+                    return
+                }
+
 
                 // 如果全部符合要求就显示成功信息
                 this.iserrortext = false;
                 this.error = "信息符合要求";
                 $.ajax({
-                    url:'/user/',
-                    method:'POST',
-                    data:JSON.stringify(this.user),
-                }).then(res=>{
-                    if(res.code === 200){
+                    url: '/user/',
+                    method: 'POST',
+                    data: JSON.stringify(this.user),
+                }).then(res => {
+                    if (res.code === 200) {
                         alert("用户注册成功！")
                         // 注册成功了跳转到登入界面
                         window.location.href = "/user/login"
-                    }else{
+                    } else {
                         alert("用户注册失败！")
                     }
                 })
@@ -230,26 +256,29 @@
 </script>
 
 <style>
-    body{
-      background: linear-gradient(135deg,#65799b,#5e2563);
+    body {
+        background: linear-gradient(135deg, #65799b, #5e2563);
     }
+
     .error {
-        color:red;
+        color: red;
         text-align: center;
         font-size: 8px;
     }
+
     .success {
         color: #a0d911;
         text-align: center;
         font-size: 8px;
     }
+
     .user-login * {
         padding: 0;
         margin: 0;
     }
 
     .user-login {
-       
+
         height: 1000px;
     }
 

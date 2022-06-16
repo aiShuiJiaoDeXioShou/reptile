@@ -1,6 +1,7 @@
 package articleservice
 
 import (
+	"log"
 	"reptile/comm"
 	"reptile/comm/res"
 	"reptile/dao/pkminfodao"
@@ -290,6 +291,7 @@ func UnLikeArticle(ctx *gin.Context) {
 		ArticleId: u,
 	})
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(200, res.FormatError("取消失败,格式错误!"))
 		return
 	}
@@ -418,7 +420,16 @@ func IsCollectArticle(ctx *gin.Context) {
 	user := value.(*userdao.User)
 
 	// 查询数据库里面是否有该条数据,0的话是点赞，1是收藏
-	am.IsCollect(user.ID,articleId,0)
+	isCollect, err2 := am.IsCollect(user.ID, articleId, 1)
+	if err2 != nil {
+		ctx.JSON(401, res.Ok("未收藏"))
+		return
+	}
+	if isCollect {
+		ctx.JSON(200, res.Ok("已收藏"))
+	} else {
+		ctx.JSON(401, res.Error("未收藏"))
+	}
 
 }
 // 判断当前用户是否点赞过该文章
@@ -440,5 +451,14 @@ func IsLikeArticle(ctx *gin.Context) {
 	user := value.(*userdao.User)
 
 	// 查询数据库里面是否有该条数据,0的话是点赞，1是收藏
-	am.IsCollect(user.ID,articleId,1)
+	isCollect, err2 := am.IsCollect(user.ID, articleId, 0)
+	if err2 != nil {
+		ctx.JSON(401, res.Ok("未收藏"))
+		return
+	}
+	if isCollect {
+		ctx.JSON(200, res.Ok("已收藏"))
+	} else {
+		ctx.JSON(401, res.Error("未收藏"))
+	}
 }

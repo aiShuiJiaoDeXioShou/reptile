@@ -307,3 +307,9 @@ func SelectUserJurByJurId(userid uint, jurid uint) bool {
 	}
 	return false
 }
+
+// 修改用户头像信息
+func UpdateUserHeadPortrait(userid uint,headsrc string) (err error) {
+	err = dao.Model(&User{}).Where("id = ?", userid).Update("head_portrait", headsrc).Error
+	return
+}

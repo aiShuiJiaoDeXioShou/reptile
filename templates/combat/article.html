@@ -19,7 +19,7 @@
     <div>
         <input type="hidden" name="archive_id" id="archive_id" value="{{.article.ID}}">
         <h2 style="margin: auto 0;font-size: 30px;font-weight: 800;margin-bottom: 8px;">{{ .article.Title }}</h2>
-        作者：<a class="author">{{.article.Author}}</a>
+        作者：<a class="author" href="/user/info/{{.article.AuthorId}}">{{.article.Author}}</a>
         <div class="time">
             最后更新日期：<span>{{.article.UpdatedAt}}</span><br>
         </div>

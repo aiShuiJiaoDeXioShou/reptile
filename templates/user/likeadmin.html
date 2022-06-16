@@ -1,10 +1,141 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{{define "user/likeadmin.html"}}
+{{template "base"}}
+<link rel="stylesheet" href="/static/css/bulma.css">
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap-icons/bootstrap-icons.css">
+<div id="like">
+
+    <el-row>
+        <el-col :span="12">
+            <h1>我喜欢的文章</h1>
+            <div class="like-list">
+
+                <div class="card" v-for="(item,index) in likeArticle">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span style="cursor: pointer;" v-text="item.title" @click="ArticleDetails(item.ID)"></span>
+                            <el-button style="float: right; padding: 3px 0" type="text" @click="onLike(item.ID)">取消喜欢
+                            </el-button>
+                        </div>
+                        <div class="card-image">
+                            <img src="/static/img/妙蛙种子官方图.png">
+                        </div>
+                        <div class="text item">
+                            <span v-text="'作者 ' + item.author"></span><br>
+                            <span v-text="'文章类型 ' + item.type"></span>
+                        </div>
+                    </el-card>
+                </div>
+
+
+            </div>
+        </el-col>
+
+        <el-col :span="12">
+            <h1>我收藏过的文章</h1>
+            <div class="like-list">
+
+                <div class="card" v-for="(item,index) in collectArticle">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span style="cursor: pointer;" v-text="item.title"  @click="ArticleDetails(item.ID)"></span>
+                            <el-button style="float: right; padding: 3px 0" type="text" @click="onColl(item.ID)">取消收藏
+                            </el-button>
+                        </div>
+                        <div class="card-image">
+                            <img src="/static/img/妙蛙种子官方图.png">
+                        </div>
+                        <div class="text item">
+                            <span v-text="'作者 ' + item.author"></span><br>
+                            <span v-text="'文章类型 ' + item.type"></span>
+                        </div>
+                    </el-card>
+                </div>
+
+            </div>
+        </el-col>
+
+    </el-row>
+
+
+</div>
+
+<script src="/static/js/axios.js"></script>
+<script>
+    new Vue({
+        el: "#like",
+        data() {
+            return {
+                likeArticle: [],
+                collectArticle: [],
+            }
+        },
+        methods: {
+            onLike(id) {
+                axios({
+                    method: 'delete',
+                    url: '/article/like/' + id + '/0',
+                }).then(res => {
+                    if (res.data.code == 200) {
+                        alert("取消喜欢成功");
+                        this.getData();
+                    }else{
+                        alert("取消喜欢失败");
+                    }
+                })
+            },
+            onColl(id) {
+                axios({
+                    method: 'delete',
+                    url: '/article/collect/' + id + '/1',
+                }).then(res => {
+                    if (res.data.code == 200) {
+                        alert("取消点赞成功");
+                        this.getData();
+                    } else {
+                        alert(res.data.msg);
+                    }
+                })
+            },
+            getData() {
+                axios.get("/user/like/article").then(res => {
+                    this.likeArticle = res.data.data;
+                })
+                axios.get("/user/collect/article").then(res => {
+                    this.collectArticle = res.data.data;
+                })
+            },
+            ArticleDetails(id){
+                top.location.href = '/tribe/article/'+id
+            }
+        },
+        created() {
+            this.getData();
+        }
+    })
+</script>
+
+<style>
+    #like .card-image img {
+        max-width: 80px;
+        height: auto;
+    }
+
+    #like .card {
+        min-width: 251px;
+        height: auto;
+        margin-left: 10px;
+        margin-top: 10px;
+    }
+
+    #like .like-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: left;
+        margin: 20px 20px;
+    }
+</style>
+{{end}}

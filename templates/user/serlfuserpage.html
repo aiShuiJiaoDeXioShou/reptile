@@ -1,0 +1,86 @@
+{{define "user/serlfuserpage.html"}}
+
+{{template "base"}}
+
+<div id="serlfuserpage">
+    <div>
+        <button @click="follow({{.user.ID}})">关注该用户+</button>
+        <button @click="TakeOff({{.user.ID}})">已经关注了-</button>
+    </div>
+    <div class="head">
+        <!-- 用户头像 -->
+        <div class="head-image">
+            <img src="{{.user.HeadPortrait}}" alt="{{.user.Name}}">
+        </div>
+        <!-- 用户昵称 -->
+        <div class="head-name">
+            <span>用户昵称：</span>{{.user.Name}}
+        </div>
+        <!-- 用户个性签名 -->
+        <div class="head-motto">
+            <span>个性签名：</span>{{.user.Motto}}
+        </div>
+    </div>
+    <!-- 用户性别 -->
+    <div class="sex">
+        <!-- 判断.user.sex 是否为1.如果为1则是男的，不为1是女的 -->
+        {{if true}}
+            男
+        {{else}}
+            女
+        {{end}}
+
+    </div>
+</div>
+
+<script src="/static/js/axios.js"></script>
+<script>
+    const serlfuserpage = new Vue({
+        el: "#serlfuserpage",
+        data() {
+            return {
+
+            }
+        },
+        methods: {
+            getUserInfo() {},
+            follow(id){
+
+            },
+            TakeOff(id){
+
+            }
+            
+        },
+        mounted() {
+            this.getUserInfo();
+        },
+    })
+</script>
+<style>
+    #serlfuserpage {
+        margin-bottom: 10px;
+        background: #fff;
+        overflow: hidden;
+        border-radius: 2px;
+        -webkit-box-shadow: 0 1px 3px rgb(18 18 18 / 10%);
+        box-shadow: 0 1px 3px rgb(18 18 18 / 10%);
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    #serlfuserpage .head {
+        display: flex;
+        padding: 20px;
+    }
+
+    #serlfuserpage .head>div {
+        margin-right: 10px;
+    }
+
+    #serlfuserpage .head-image>img {
+        width: 160px;
+        height: auto;
+    }
+</style>
+{{end}}

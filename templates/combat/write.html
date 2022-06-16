@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="/static/mycss/user/write.css">
 <link rel="stylesheet" href="/static/js/editor.md-master/css/editormd.css" />
 {{template "base".}}
+<link rel="stylesheet" href="/static/css/bulma.css">
 
 <head>
     <title>写作页面</title>
@@ -9,23 +10,36 @@
 
 <body>
     <div id="writeapp">
-        <div v-text="msg"></div>
-
         <!-- 将写作插件集成在这里 -->
-        <form id="mdEditorForm">
-            标题：<input class="layui-input" type="text" name="title">
+        <form id="mdEditorForm" class="form">
+            <div class="top-input">
+                标题：<input class="layui-input input is-link" type="text" name="title">
 
-            <div>
-                作者：<input class="layui-input" type="text" name="author">
+                <div>
+                    作者：<input class="layui-input input is-link" type="text" name="author">
+                </div>
+
+                <div class="select">
+                    分类：
+                    <select title="category" class="layui-input" name="category">
+                      <option>article</option>
+                      <option>pokemon</option>
+                      <option>user</option>
+                      <option>activity</option>
+                      <option>title</option>
+                      <option>book</option>
+                      <option>music</option>
+                      <option>news</option>
+                      <option>around</option>
+                      <option>recommend</option>
+                    </select>
+                  </div>
+
+                <div>
+                    标签：<input class="layui-input input is-link" type="text" name="tag">
+                </div>
             </div>
 
-            <div>
-                分类：<input class="layui-input" type="text" name="category">
-            </div>
-
-            <div>
-                标签：<input class="layui-input" type="text" name="tag">
-            </div>
 
             <div id="editor">
                 <textarea name="content" id="content" style="display:none;">
@@ -117,4 +131,19 @@
         });
     });
 </script>
+<style>
+    #editor {
+        overflow: scroll;
+        height: 600px;
+    }
+    .top-input{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        /* 自动换行 */
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+</style>
 {{end}}

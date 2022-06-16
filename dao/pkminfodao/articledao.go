@@ -182,16 +182,23 @@ func (am *ArticleManager) AddCollect(collect *ArticleLike) (err error) {
 
 // 删除一条收藏或者点赞
 func (am *ArticleManager) DeleteLikeOrCollect(like *ArticleLike) (err error) {
-	err = am.Dao.Delete(like).Error
+	err = am.Dao.Debug().Where("article_id = ? and user_id = ? and type = ?",like.ArticleId,like.UserId,like.Type).Delete(like).Error
 	return
 }
 
 // 判断当前用户是否收藏过该文章
 func (am *ArticleManager) IsCollect(userId, articleId uint, typestr int) (isCollect bool, err error) {
 	var collect ArticleLike
-	err = am.Dao.Where("user_id = ? and article_id = ? and type = ?", userId, articleId, typestr).First(&collect).Error
+	err = am.Dao.Debug().Where("user_id = ? and article_id = ? and type = ?", userId, articleId, typestr).First(&collect).Error
 	if err != nil {
-		isCollect = true
+		isCollect = false
 	}
+	isCollect = true
+	return
+}
+
+// 获取指定用户所有收藏Or喜欢的文章
+func (am *ArticleManager) FindCollectOrLikeByUserId(userId uint, typestr string) (collects []ArticleLike, err error) {
+	err = am.Dao.Where("user_id = ? and type = ?", userId, typestr).Find(&collects).Error
 	return
 }
