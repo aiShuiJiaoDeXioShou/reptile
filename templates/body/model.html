@@ -41,9 +41,9 @@
 
                         <h2><i class="el-icon-help"></i> 周边信息</h2>
                         <ul>
-                            <li class="block" v-for="(item, index) in around" :key="index">
+                            <li class="block" v-for="(item, index) in around" :key="index" @click="ArticleDetails(item.article_id)">
                                 <!-- 这个用于显示图片 -->
-                                <div class="consult-image"></div>
+                                <div class="consult-image" :style="'background: url('+item.image_url+') no-repeat center center; background-size: cover;  width: 120px;height: auto;'"></div>
                                 <p>
                                     <span style="font-size: 14px;overflow: hidden;-webkit-line-clamp: 1;width: 400px;" v-text="item.title"></span> <br>
                                     <span v-text="item.description"></span>
@@ -87,16 +87,16 @@
                         <!-- 下面这个是它的详细图表信息 -->
                         <div class="bkm-chart-info">
                             <h2>种族值</h2>
-                            攻击力:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack"></el-progress>
-                            防御力:<el-progress class="pkm-progress-bar" :percentage="showpkom.defense">
+                            攻击力:<el-progress class="pkm-progress-bar"  :stroke-width="16" :text-inside="true"  :percentage="showpkom.attack"></el-progress>
+                            防御力:<el-progress class="pkm-progress-bar" :stroke-width="16"  :text-inside="true"  :percentage="showpkom.defense">
                             </el-progress>
-                            特攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_attack">
+                            特攻:<el-progress class="pkm-progress-bar" :stroke-width="16" :text-inside="true"  :percentage="showpkom.sp_attack">
                             </el-progress>
-                            物攻:<el-progress class="pkm-progress-bar" :percentage="showpkom.attack" status="success">
+                            物攻:<el-progress class="pkm-progress-bar" :stroke-width="16" :text-inside="true"  :percentage="showpkom.attack" status="success">
                             </el-progress>
-                            特防:<el-progress class="pkm-progress-bar" :percentage="showpkom.sp_defense" status="warning">
+                            特防:<el-progress class="pkm-progress-bar" :stroke-width="16" :text-inside="true"  :percentage="showpkom.sp_defense" status="warning">
                             </el-progress>
-                            速度:<el-progress class="pkm-progress-bar" :percentage="showpkom.speed" status="exception">
+                            速度:<el-progress class="pkm-progress-bar" :stroke-width="16" :text-inside="true"  :percentage="showpkom.speed" status="exception">
                             </el-progress>
                         </div>
 
@@ -233,6 +233,9 @@
             }
         },
         methods: {
+            ArticleDetails(id){
+                window.top.location.href = '/tribe/article/' + id;
+            },
             chart() {
                 var dom = document.getElementById('container');
                 var myChart = echarts.init(dom, 'light', {

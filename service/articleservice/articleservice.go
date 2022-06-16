@@ -143,6 +143,10 @@ func GetChildrenComment(ctx *gin.Context) {
 	var childrenComment []gin.H
 	for _, comment := range comments {
 
+		if comment.ToUserID == 0 {
+			continue
+		}
+
 		userids = append(userids, comment.UserId)
 		user, _ := userdao.FindUserById(comment.UserId)
 		touser, _ := userdao.FindUserById(comment.ToUserID)
