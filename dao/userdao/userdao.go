@@ -84,6 +84,17 @@ type (
 	}
 )
 
+// 查询所有的用户对象,以及他们对应的权限信息
+func FindAllUser() (users []User, err error) {
+	err = dao.Select("id,name,head_portrait").Find(&users).Error
+	return
+}
+
+// 获取一个用户拥有的全部权限
+func FindUserAllJurs(userid string){
+	
+}
+
 // CreateUser 创建一个用户对象
 func CreateUser(user *User) error {
 	// 将密码进行加密
@@ -311,5 +322,23 @@ func SelectUserJurByJurId(userid uint, jurid uint) bool {
 // 修改用户头像信息
 func UpdateUserHeadPortrait(userid uint,headsrc string) (err error) {
 	err = dao.Model(&User{}).Where("id = ?", userid).Update("head_portrait", headsrc).Error
+	return
+}
+
+// 获取角色对象的详细信息
+func GetRoleInfo(roleid uint) (role Role, err error) {
+	err = dao.Model(&Role{}).Where("id = ?", roleid).First(&role).Error
+	return
+}
+
+// 获取ids对应的角色信息
+func GetRoleInfoByIds(ids []uint) (roles []Role, err error) {
+	err = dao.Model(&Role{}).Where("id in (?)", ids).Find(&roles).Error
+	return
+}
+
+// 获取ids对应的权限信息
+func GetJurInfoByIds(ids []uint) (jurs []Jur, err error) {
+	err = dao.Model(&Jur{}).Where("id in (?)", ids).Find(&jurs).Error
 	return
 }

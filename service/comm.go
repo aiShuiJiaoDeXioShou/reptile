@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reptile/comm/res"
+	"reptile/middleware/usermiddleware"
 	"reptile/service/articleservice"
 	"reptile/service/pkemonservice"
 	"reptile/service/team"
@@ -23,6 +25,23 @@ func StartData(router *gin.Engine) {
 	pkemonservice.StartPkmonService(router)
 	tribe.NewTribeService(router).StartTribeService()
 	upload(router)
+	jurTest(router)
+}
+
+func jurTest(router *gin.Engine){
+	rg := router.Group("/test")
+	{
+		rg.GET("/:name/:jurname",func(ctx *gin.Context) {
+			name := ctx.Param("name")
+			jurname := ctx.Param("jurname")
+			if name == "jur" {
+				usermiddleware.JurMiddleware(ctx,[]string{jurname})
+			} else if name == "role" {
+				usermiddleware.RoleMiddleware(ctx,[]string{jurname})
+			}
+			ctx.JSON(http.StatusOK,res.Ok("访问成功"))
+		})
+	}
 }
 
 // 文件上传

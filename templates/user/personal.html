@@ -61,7 +61,7 @@
 
           <el-menu-item index="9">
             <i class="el-icon-setting"></i>
-            <span slot="title">设置</span>
+            <span slot="title">权限管理</span>
           </el-menu-item>
 
         </el-menu>
@@ -116,6 +116,9 @@
           this.loading = false;
         }else if(key == 6){
           this.src = "/user/likeadmin"
+          this.loading = false;
+        }else if(key == 9){
+          this.src = "/user/juradmin"
           this.loading = false;
         }
       }

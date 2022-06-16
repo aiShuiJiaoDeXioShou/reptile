@@ -10,6 +10,7 @@ import (
 	"reptile/dao/pkminfodao"
 	"reptile/dao/userdao"
 	"reptile/middleware/usermiddleware"
+	"strconv"
 
 	"time"
 
@@ -56,10 +57,144 @@ func UserSerice(router *gin.Engine) {
 
 		// 上传或者修改用户头像
 		uploadUserHeader(router)
+
+		// 获取所有用户信息
+		r.GET("/allinfo",getAllUser)
+
+		// 获取指定用户拥有的角色
+		r.GET("/role/:id",usermiddleware.UserLoginJudgeMiddleware,getUserRole)
+
+		// 获取指定角色的权限信息UserSerice
+		r.GET("/role/:id/jur",usermiddleware.UserLoginJudgeMiddleware,getRoleToJur)
+
+		// 赋予一个用户一种角色
+		r.POST("/role/:id/:role",userAddRole)
+
+		// 赋予一个角色一种权限
+		r.POST("/jur/:id/:jur",userAddJur)
 	}
 
 }
 
+// 获取所有的用户对象
+func getAllUser(ctx *gin.Context) {
+	users, err := userdao.FindAllUser()
+	if err != nil {
+		fmt.Println("获取所有用户失败:", err)
+		res.Fail("获取所有用户失败")
+		return
+	}
+	ctx.JSON(http.StatusOK, res.Ok(users))
+}
+
+// 获取指定用户的所有角色
+func getUserRole(ctx *gin.Context) {
+	id := ctx.Param("id")
+	// 将id转化为uint类型getUserRole
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		res.Fail("获取用户角色失败")
+		log.Println(err)
+		return
+	}
+	ur, err2 := userdao.SelectUserJur(uint(i))
+	if err2 != nil {
+		res.Fail("获取用户角色失败")
+		log.Println(err2)
+		return
+	}
+	// 根据返回的ur获取权限的详细信息
+	var roleids []uint
+	for _, v := range ur {
+		roleids = append(roleids, v.RoleId)
+	}
+
+	roles, err3 := userdao.GetRoleInfoByIds(roleids)
+	if err3 != nil {
+		res.Fail("获取用户角色失败")
+		log.Println(err3)
+		return
+	}
+	ctx.JSON(http.StatusOK, res.Ok(roles))
+}
+
+// 根据指定角色查看权限信息
+func getRoleToJur(ctx *gin.Context) {
+	s := ctx.Param("id")
+	// 将s转化为uint类型
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	ur := userdao.SelectRoleJurByRoleId(uint(i))
+	// 根据返回的ur获取权限的详细信息
+	var jurids []uint
+	for _, v := range ur {
+		jurids = append(jurids, v.JurId)
+	}
+	jurs, err2 := userdao.GetJurInfoByIds(jurids)
+	if err2 != nil {
+		res.Fail("获取角色权限失败")
+		log.Println(err2)
+		return
+	}
+	ctx.JSON(200, res.Ok(jurs))
+}
+
+// 赋予一个用户一种角色
+func userAddRole(ctx *gin.Context) {
+	id := ctx.Param("id")
+	role := ctx.Param("role")
+	// 将id转化为uint类型
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		res.Fail("赋予用户角色失败,用户id格式错误")
+		log.Println(err)
+		return
+	}
+	// 将role转化为uint类型
+	j, err2 := strconv.Atoi(role)
+	if err2 != nil {
+		res.Fail("赋予用户角色失败,角色id格式错误")
+		log.Println(err2)
+		return
+	}
+	err3 := userdao.CreateUserRole(&userdao.UserRole{UserId: uint(i), RoleId: uint(j)})
+	if err3 != nil {
+		res.Fail("赋予用户角色失败")
+		log.Println(err3)
+		return
+	}
+	ctx.JSON(200, res.Ok("赋予用户角色成功"))
+}
+
+// 赋予一个角色一种权限
+func userAddJur(ctx *gin.Context) {
+	id := ctx.Param("id")
+	jur := ctx.Param("jur")
+	// 将id转化为uint类型
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		res.Fail("赋予角色权限失败,角色id格式错误")
+		log.Println(err)
+		return
+	}
+	// 将jur转化为uint类型
+	j, err2 := strconv.Atoi(jur)
+	if err2 != nil {
+		res.Fail("赋予角色权限失败,权限id格式错误")
+		log.Println(err2)
+		return
+	}
+	err3 := userdao.CreateJurRole(&userdao.JurRole{JurId: uint(i), RoleId: uint(j)})
+	if err3 != nil {
+		res.Fail("赋予角色权限失败")
+		log.Println(err3)
+		return
+	}
+	ctx.JSON(200, res.Ok("赋予用户角色成功"))
+}
 
 
 // 文件上传

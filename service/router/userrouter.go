@@ -41,6 +41,12 @@ func (myrouter *MyRouter) newUserRouter(router *gin.Engine) {
 		})
 		// 查看对方的信息
 		userrouter.GET("/info/:id", getUserById)
+		// 跳转到权限管理页面
+		userrouter.GET("/juradmin", func(ctx *gin.Context) {
+			ctx.HTML(http.StatusOK, "user/jur.html", gin.H{
+				"title": "权限管理页面",
+			})
+		})
 	}
 
 }

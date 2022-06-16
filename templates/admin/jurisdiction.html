@@ -1,0 +1,219 @@
+{{define "user/jur.html"}}
+{{template "base"}}
+<link rel="stylesheet" href="/static/css/bulma.css">
+
+<div id="jur">
+    <h1>权限管理案例</h1>
+    <a class="button is-text" @click="caseGo('/jur/vip1')">只有权限vip1才能访问</a>
+    <a class="button is-ghost" @click="caseGo('/role/svip1')">只有角色svip1才能访问</a>
+    <a class="button is-ghost" @click="caseGo('/role/svip2')">只有角色svip2才能访问</a>
+    <a class="button is-ghost" @click="caseGo('/jur/vip2')">只有权限vip2才能访问</a>
+    <br>
+    <template>
+        <el-select v-model="userid" filterable placeholder="请选择">
+            <div v-for="item in users">
+                <el-option :key="item.ID" :label="item.name" :value="item.ID">
+                </el-option>
+                <el-button type="info" style="margin-bottom: 10px;" @click="addRole(item.ID)"
+                    v-text="'为'+item.name+'添加一个角色'"></el-button>
+            </div>
+        </el-select>
+    </template>
+
+    <br>
+
+    <el-card class="box-card" shadow="hover">
+        <el-avatar :size="60" @error="errorHandler">
+            <img :title="nowUser.name" :src="nowUser.head_portrait" :alt="nowUser.name" />
+        </el-avatar>
+        <div v-text="'ID: ' + nowUser.ID"></div>
+        <div v-text="'NAME: ' + nowUser.name"></div>
+    </el-card>
+
+    <el-card class="box-card" shadow="hover">
+        <span>用户权限信息</span>
+        <br><br>
+        <el-card class="box-card" shadow="hover" v-for="(item, index) in nowRole" :key="index">
+            <h2>
+                <span>角色名称：</span>
+                <span v-text="item.name"></span>
+            </h2>
+            <h2>
+                <span>角色描述：</span>
+                <span v-text="item.description"></span>
+            </h2>
+            <el-button @click="roleForJur(item.ID)" v-text="'查看'+item.name+'所有权限'"></el-button>
+            <el-button @click="addJur(item.ID)" v-text="'为'+item.name+'添加一个权限'"></el-button>
+        </el-card>
+
+    </el-card>
+
+    <el-card class="box-card" shadow="hover">
+        <div v-for="(juritem, jurIndex) in nowJur" :key="jurIndex">
+            <h2>
+                <span>权限名称：</span>
+                <span v-text="juritem.name"></span>
+            </h2>
+            <h2>
+                <span>权限描述：</span>
+                <span v-text="juritem.description"></span>
+            </h2>
+        </div>
+    </el-card>
+
+</div>
+
+<script src="/static/js/axios.js"></script>
+<script>
+    const jur = new Vue({
+        el: "#jur",
+        data() {
+            return {
+                users: [],
+                nowUser: {
+                    ID: '',
+                    name: '',
+                    head_portrait: '/static/img/妙蛙种子官方图.png'
+                },
+                nowRole: [],
+                userid: "",
+                nowJur: [],
+            }
+        },
+        methods: {
+            grant() {
+
+            },
+            getData() {
+                axios.get("/user/allinfo").then(res => {
+                    this.users = res.data.data;
+                    this.userid = this.nowUser.ID
+                    this.nowUser = this.users[0];
+                })
+            },
+            // 获取指定用户角色
+            getUserRole(id) {
+                axios.get("/user/role" + id).then(res => {
+                    this.nowRole = res.data.data;
+                })
+            },
+            errorHandler() {
+                this.$message({
+                    message: '加载头像失败',
+                    type: 'warning'
+                })
+            },
+            // 获取当前选中的用户，根据userid筛选数组
+            getNowUser() {
+                return this.nowUser = this.users.filter(item => {
+                    return item.ID == this.userid
+                })[0]
+            },
+            roleForJur(id) {
+                axios.get("/user/role/" + id + "/jur").then(res => {
+                    if (res.data.code == 200) {
+                        this.nowJur = res.data.data;
+                    }
+                })
+            },
+            // 添加一个角色
+            addRole(id) {
+                this.$prompt('想要添加的角色信息', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /.*/,
+                    inputErrorMessage: '用户名格式不正确'
+                }).then(({
+                    value
+                }) => {
+                    axios.post("/user/role/" + id + "/" + value).then(res => {
+                        if (res.data.code == 200) {
+                            this.$message({
+                                message: res.data.data,
+                                type: 'success'
+                            })
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+            },
+            // 添加一个权限
+            addJur(id) {
+                this.$prompt('想要添加的权限信息', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /.*/,
+                    inputErrorMessage: '用户名格式不正确'
+                }).then(({
+                    value
+                }) => {
+                    axios.post("/user/jur/" + id + "/" + value).then(res => {
+                        if (res.data.code == 200) {
+                            this.$message({
+                                message: res.data.data,
+                                type: 'success'
+                            })
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+            },
+            caseGo(str){
+                axios.get('/test'+str).then(res=>{
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.data,
+                            type: 'success'
+                        })
+                    }else{
+                        this.$message({
+                            message: "访问失败",
+                            type: 'error'
+                        })
+                    }
+                }).catch(res=>{
+                    this.$message({
+                        message: "访问失败",
+                        type: 'error'
+                    })
+                })
+            }
+        },
+        mounted() {
+            this.getData();
+        },
+        watch: {
+            userid() {
+
+                this.getNowUser();
+
+                axios.get("/user/role/" + this.nowUser.ID).then(res => {
+                    if (res.data.code == 200) {
+                        this.nowRole = res.data.data;
+                    }
+                })
+
+                console.log(this.userid);
+
+            }
+        }
+    })
+</script>
+<style>
+    .box-card {
+        margin-bottom: 20px;
+    }
+    #jur {
+        max-height: 700px;
+        overflow: scroll;
+    }
+</style>
+{{end}}
